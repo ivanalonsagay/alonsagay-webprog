@@ -24,7 +24,7 @@ const HomePage = () => {
           </div>
 
           {/* Hero image */}
-                    <div className="flex h-72 w-full items-center justify-center rounded-[1.25rem] bg-zinc-200 overflow-hidden">
+                    <div className="flex h-72 w-full items-center justify-center rounded-[1.25rem] bg-zinc-20 overflow-hidden">
                       <img
                         src={HomeImage}
                         alt="woman drinking calamansi juice"

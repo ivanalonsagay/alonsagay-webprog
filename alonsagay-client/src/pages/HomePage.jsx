@@ -1,6 +1,6 @@
 import Button from '../components/Button';
 import HomeImage from '../assets/home1a.png';
-
+ 
 const metrics = [
   {
     icon: '🧺',
@@ -75,7 +75,6 @@ const HomePage = () => (
               <span className="text-3xl">🍋</span>
               <p className="text-sm leading-5 text-zinc-700">
                 Real Calamansi <br />
-                No Concentrate
               </p>
             </div>
 
@@ -83,15 +82,13 @@ const HomePage = () => (
               <span className="text-3xl">🌱</span>
               <p className="text-sm leading-5 text-zinc-700">
                 Locally Sourced <br />
-                Always Fresh
               </p>
             </div>
 
             <div className="flex items-center gap-3">
               <span className="text-3xl">🧃</span>
               <p className="text-sm leading-5 text-zinc-700">
-                Made with Care <br />
-                in the Philippines
+                Made with Care in PH<br />
               </p>
             </div>
 

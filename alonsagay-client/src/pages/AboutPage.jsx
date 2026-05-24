@@ -1,9 +1,10 @@
 import Button from '../components/Button';
 
-import Article1 from '../assets/article2a.jpg';
-import Article2 from '../assets/article2b.jpg';
-import Article3 from '../assets/article2c.jpg';
-import Article4 from '../assets/article2d.jpg';
+import About from '../assets/about1a.png';
+import About1 from '../assets/AboutVG1.jpg';
+import About2 from '../assets/AboutVG2.jpg';
+import About3 from '../assets/AboutVG3.jpg';
+import About4 from '../assets/AboutVG4.jpg';
 
 const values = [
   {
@@ -28,25 +29,25 @@ const values = [
 
 const highlights = [
   {
-    image: Article1,
+    image: About1,
     label: 'Fresh Taste',
     title: 'Real Calamansi Goodness',
     description: 'Natural, tangy, and refreshing in every sip.',
   },
   {
-    image: Article2,
+    image: About2,
     label: 'Local Pride',
     title: 'Made for Every Pinoy',
     description: 'Gawang lokal, swak sa bawat tahanan.',
   },
   {
-    image: Article3,
+    image: About3,
     label: 'Refreshing Drink',
     title: 'Perfect for Hot Days',
     description: 'A sweet and citrusy drink for everyday refreshment.',
   },
   {
-    image: Article4,
+    image: About4,
     label: 'Pinoy Flavor',
     title: 'Proudly Makabayan',
     description: 'Pinoy na lasa, pride ng ating bayan.',
@@ -96,7 +97,7 @@ const AboutPage = () => (
 
         <div className="relative overflow-hidden rounded-[2rem] shadow-2xl shadow-green-900/10">
           <img
-            src={Article1}
+            src={About}
             alt="Ivanka Calamansi Juice"
             className="h-full min-h-[360px] w-full object-cover sm:min-h-[460px] lg:min-h-[520px]"
           />

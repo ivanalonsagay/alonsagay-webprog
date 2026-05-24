@@ -1,11 +1,11 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // HomePage Structure
-
-import Layout from './components/Layout' ;
-import ArticlePage from './pages/ArticlePage' ;
-import HomePage from './pages/HomePage' ;
-import AboutPage from './pages/AboutPage' ;
+import Layout from './components/Layout';
+import ArticlePage from './pages/ArticlePage';
+import ArticleDetailPage from './pages/ArticleDetailPage';
+import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
 
 const routes = [
   {
@@ -24,6 +24,10 @@ const routes = [
         path: 'articles',
         element: <ArticlePage />,
       },
+      {
+        path: 'articles/:id',
+        element: <ArticleDetailPage />,
+      },
     ],
   },
 ];
@@ -31,11 +35,7 @@ const routes = [
 const router = createBrowserRouter(routes);
 
 function App() {
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

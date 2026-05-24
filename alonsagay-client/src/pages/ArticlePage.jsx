@@ -40,17 +40,14 @@ const featuredTopics = [
   {
     icon: '🍊',
     title: 'Tangy & Fresh',
-    description: 'Refreshing calamansi flavor made for everyday Pinoy moments.',
   },
   {
     icon: '🌱',
     title: 'Healthy & Local',
-    description: 'Inspired by locally loved ingredients and fresh citrus taste.',
   },
   {
     icon: '🇵🇭',
     title: 'Makabayan Flavor',
-    description: 'A proudly Pinoy drink that celebrates local refreshment.',
   },
 ];
 
@@ -76,6 +73,17 @@ const ArticlePage = () => (
             taste to its proudly Pinoy flavor. Learn why this tangy and
             refreshing drink is perfect for everyday moments.
           </p>
+
+          <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-3">
+            {featuredTopics.map((topic) => (
+              <div key={topic.title} className="flex items-center gap-3">
+                <span className="text-3xl">{topic.icon}</span>
+                <p className="text-sm leading-5 text-zinc-700">
+                  {topic.title}
+                </p>
+              </div>
+            ))}
+          </div>
 
           <div className="mt-9 flex flex-wrap gap-4">
             <Button
@@ -140,11 +148,11 @@ const ArticlePage = () => (
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {articles.map((article, index) => (
             <article
               key={article.title}
-              className="group overflow-hidden rounded-3xl border border-green-900/10 bg-[#fffdf5] shadow-lg shadow-green-900/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-green-900/10"
+              className="group flex h-full flex-col overflow-hidden rounded-3xl border border-green-900/10 bg-[#fffdf5] shadow-lg shadow-green-900/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-green-900/10"
             >
               <div className="aspect-[4/3] overflow-hidden">
                 <img
@@ -154,28 +162,28 @@ const ArticlePage = () => (
                 />
               </div>
 
-              <div className="flex min-h-[280px] flex-col p-6">
+              <div className="flex flex-1 flex-col p-6">
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-zinc-600">
                   Article {index + 1} / {article.category}
                 </p>
 
-                <h3 className="mt-3 text-xl font-black text-green-900">
+                <h3 className="mt-3 min-h-[56px] text-xl font-black text-green-900">
                   {article.title}
                 </h3>
 
                 <div className="mt-3 h-1 w-10 rounded-full bg-yellow-500" />
 
-                <p className="mt-4 flex-1 text-sm leading-6 text-zinc-700">
+                <p className="mt-4 min-h-[96px] text-sm leading-6 text-zinc-700">
                   {article.description}
                 </p>
 
                 <Button
                   to="/articles"
-                  className="!relative !mt-6 !inline-flex !h-12 !w-[210px] !items-center !justify-center !rounded-full !border-0 !bg-green-900 !px-8 !text-[11px] !font-black !uppercase !tracking-[0.18em] !text-white !shadow-md !shadow-green-900/20 hover:!bg-green-800"
+                  className="!mt-auto !inline-flex !w-fit !items-center !justify-center !gap-3 !rounded-full !border-0 !bg-green-900 !px-8 !py-3 !text-[11px] !font-black !uppercase !tracking-[0.18em] !text-white !shadow-md !shadow-green-900/20 hover:!bg-green-800"
                 >
-                  <span>Read More</span>
+                  <span>Read Article</span>
 
-                  <span className="!absolute !right-7 !top-1/2 !flex !-translate-y-[55%] !items-center !justify-center text-base leading-none">
+                  <span className="inline-flex -translate-y-[2px] items-center text-base leading-none">
                     ›
                   </span>
                 </Button>

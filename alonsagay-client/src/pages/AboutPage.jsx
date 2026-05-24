@@ -87,7 +87,7 @@ const AboutPage = () => (
 
             <Button
               to="/articles"
-              className="!inline-flex !items-center !justify-center !gap-3 !rounded-full !border-2 !border-green-800 !bg-transparent !px-9 !py-4 !text-xs !font-black !uppercase !tracking-[0.18em] !text-green-900 hover:!bg-green-900 hover:!text-white"
+              className="!inline-flex !items-center !justify-center !gap-3 !rounded-full !border-1!border-green-800 !bg-transparent !px-9 !py-4 !text-xs !font-black !uppercase !tracking-[0.18em] !text-green-900 hover:!bg-green-900 hover:!text-white"
             >
               Read Articles
             </Button>

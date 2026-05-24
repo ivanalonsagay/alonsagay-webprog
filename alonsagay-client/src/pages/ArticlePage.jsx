@@ -7,6 +7,7 @@ import Article4 from '../assets/article2d.jpg';
 
 const articles = [
   {
+    id: 1,
     image: Article1,
     category: 'Fresh Taste',
     title: 'Fresh Calamansi Juice',
@@ -14,6 +15,7 @@ const articles = [
       'Natural, tangy, and refreshing. A perfect drink for hot days, school breaks, and bonding moments.',
   },
   {
+    id: 2,
     image: Article2,
     category: 'Local Goodness',
     title: 'Healthy and Local',
@@ -21,6 +23,7 @@ const articles = [
       'Gawang lokal at swak sa bawat tahanan. Made to celebrate the familiar taste Filipinos love.',
   },
   {
+    id: 3,
     image: Article3,
     category: 'Everyday Refreshment',
     title: 'Sweet and Refreshing',
@@ -28,11 +31,27 @@ const articles = [
       'A citrusy drink that helps cool you down and keeps every moment light, fresh, and enjoyable.',
   },
   {
+    id: 4,
     image: Article4,
     category: 'Pinoy Pride',
     title: 'Makabayan Flavors',
     description:
       'Pinoy na lasa, pride ng ating bayan. A refreshing product inspired by local flavor and quality.',
+  },
+];
+
+const featuredTopics = [
+  {
+    icon: '🍊',
+    title: 'Tangy & Fresh',
+  },
+  {
+    icon: '🌱',
+    title: 'Healthy & Local',
+  },
+  {
+    icon: '🇵🇭',
+    title: 'Makabayan Flavor',
   },
 ];
 
@@ -58,6 +77,17 @@ const ArticlePage = () => (
             taste to its proudly Pinoy flavor. Learn why this tangy and
             refreshing drink is perfect for everyday moments.
           </p>
+
+          <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-3">
+            {featuredTopics.map((topic) => (
+              <div key={topic.title} className="flex items-center gap-3">
+                <span className="text-3xl">{topic.icon}</span>
+                <p className="text-sm leading-5 text-zinc-700">
+                  {topic.title}
+                </p>
+              </div>
+            ))}
+          </div>
 
           <div className="mt-9 flex flex-wrap gap-4">
             <Button
@@ -125,7 +155,7 @@ const ArticlePage = () => (
         <div className="grid items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {articles.map((article, index) => (
             <article
-              key={article.title}
+              key={article.id}
               className="group flex h-full flex-col overflow-hidden rounded-3xl border border-green-900/10 bg-[#fffdf5] shadow-lg shadow-green-900/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-green-900/10"
             >
               <div className="aspect-[4/3] overflow-hidden">
@@ -152,7 +182,7 @@ const ArticlePage = () => (
                 </p>
 
                 <Button
-                  to="/articles"
+                  to={`/articles/${article.id}`}
                   className="!mt-auto !inline-flex !w-fit !items-center !justify-center !gap-3 !rounded-full !border-0 !bg-green-900 !px-8 !py-3 !text-[11px] !font-black !uppercase !tracking-[0.18em] !text-white !shadow-md !shadow-green-900/20 hover:!bg-green-800"
                 >
                   <span>Read Article</span>

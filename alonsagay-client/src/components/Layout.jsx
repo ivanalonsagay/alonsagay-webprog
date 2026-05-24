@@ -1,14 +1,13 @@
 import { Outlet } from 'react-router-dom';
+
 import NavBar from './NavBar';
-import Footer from './Footer'; // import your footer
+import Footer from './Footer';
 
 const Layout = () => {
   return (
-    <div className="min-h-screen bg-[#fdf7e7] text-zinc-900 flex flex-col">
+    <div className="min-h-screen bg-[#fff9ea]">
       <NavBar />
-      <main className="pt-20 flex-1">
-        <Outlet />
-      </main>
+      <Outlet />
       <Footer />
     </div>
   );

@@ -1,103 +1,191 @@
 import Button from '../components/Button';
 
-// Import all your article images
 import Article1 from '../assets/article2a.jpg';
 import Article2 from '../assets/article2b.jpg';
 import Article3 from '../assets/article2c.jpg';
 import Article4 from '../assets/article2d.jpg';
 
-const ArticlePage = () => {
-  // Array of articles with images, title, and description
-  const articles = [
-    {
-      image: Article1,
-      title: 'Fresh Calamansi Juice',
-      description: 'Natural, tangy, and full of Vitamin C.',
-    },
-    {
-      image: Article2,
-      title: 'Healthy and Local',
-      description: 'Gawang lokal, swak sa bawat tahanan.',
-    },
-    {
-      image: Article3,
-      title: 'Sweet and Refreshing',
-      description: 'Perfect na pampatanggal uhaw sa init.',
-    },
-    {
-      image: Article4,
-      title: 'Makabayan Flavors',
-      description: 'Pinoy na lasa, pride ng ating bayan.',
-    },
-  ];
+const articles = [
+  {
+    image: Article1,
+    category: 'Fresh Taste',
+    title: 'Fresh Calamansi Juice',
+    description:
+      'Natural, tangy, and refreshing. A perfect drink for hot days, school breaks, and bonding moments.',
+  },
+  {
+    image: Article2,
+    category: 'Local Goodness',
+    title: 'Healthy and Local',
+    description:
+      'Gawang lokal at swak sa bawat tahanan. Made to celebrate the familiar taste Filipinos love.',
+  },
+  {
+    image: Article3,
+    category: 'Everyday Refreshment',
+    title: 'Sweet and Refreshing',
+    description:
+      'A citrusy drink that helps cool you down and keeps every moment light, fresh, and enjoyable.',
+  },
+  {
+    image: Article4,
+    category: 'Pinoy Pride',
+    title: 'Makabayan Flavors',
+    description:
+      'Pinoy na lasa, pride ng ating bayan. A refreshing product inspired by local flavor and quality.',
+  },
+];
 
-  return (
-    <div className="flex w-full flex-col gap-6 bg-[#fdf7e7]"> {/* Light beige background */}
+const featuredTopics = [
+  {
+    icon: '🍊',
+    title: 'Tangy & Fresh',
+    description: 'Refreshing calamansi flavor made for everyday Pinoy moments.',
+  },
+  {
+    icon: '🌱',
+    title: 'Healthy & Local',
+    description: 'Inspired by locally loved ingredients and fresh citrus taste.',
+  },
+  {
+    icon: '🇵🇭',
+    title: 'Makabayan Flavor',
+    description: 'A proudly Pinoy drink that celebrates local refreshment.',
+  },
+];
 
+const ArticlePage = () => (
+  <main className="min-h-screen w-full bg-[#fff9ea]">
+    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-10 px-5 pb-12 pt-8 sm:px-8 lg:px-12">
       {/* Hero Section */}
-      <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-
-          {/* Hero Image */}
-          <div className="flex h-72 w-full items-center justify-center rounded-[1.25rem] bg-zinc-200 overflow-hidden">
-            <img
-              src={Article1} // Use first image as hero
-              alt="woman drinking juice"
-              className="h-full w-full object-cover"
-            />
+      <section className="grid gap-10 pt-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="max-w-2xl">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#edf5d9] px-5 py-2 text-sm font-bold uppercase tracking-[0.18em] text-green-900">
+            <span>📰</span>
+            <span>Ivanka Articles</span>
           </div>
 
-          {/* Hero Text */}
-          <div>
-            <h1 className="text-4xl font-bold text-green-900 sm:text-5xl leading-tight">
-              Featured Articles
-            </h1>
-            <p className="mt-4 text-lg text-zinc-900 max-w-lg">
-              Mga kwento tungkol sa ating masarap at makabayan na produkto!
-            </p>
+          <h1 className="max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-green-900 sm:text-6xl lg:text-7xl">
+            Stories About Fresh, Local Calamansi Goodness
+          </h1>
 
-            <div className="mt-6">
-              <Button to="/">Back Home</Button>
-            </div>
+          <div className="mt-5 h-1 w-14 rounded-full bg-yellow-500" />
+
+          <p className="mt-7 max-w-xl text-base leading-8 text-zinc-700 sm:text-lg">
+            Discover stories about Ivanka Calamansi Juice, from its fresh citrus
+            taste to its proudly Pinoy flavor. Learn why this tangy and
+            refreshing drink is perfect for everyday moments.
+          </p>
+
+          <div className="mt-9 flex flex-wrap gap-4">
+            <Button
+              to="/"
+              className="!inline-flex !items-center !justify-center !gap-3 !rounded-full !border-0 !bg-green-900 !px-9 !py-4 !text-xs !font-black !uppercase !tracking-[0.18em] !text-white !shadow-lg !shadow-green-900/25 hover:!bg-green-800"
+            >
+              Back Home
+            </Button>
+
+            <Button
+              to="/about"
+              className="!inline-flex !items-center !justify-center !gap-3 !rounded-full !border-2 !border-green-800 !bg-transparent !px-9 !py-4 !text-xs !font-black !uppercase !tracking-[0.18em] !text-green-900 hover:!bg-green-900 hover:!text-white"
+            >
+              About Ivanka
+            </Button>
           </div>
+        </div>
 
+        <div className="relative overflow-hidden rounded-[2rem] shadow-2xl shadow-green-900/10">
+          <img
+            src={Article1}
+            alt="Fresh Ivanka Calamansi Juice"
+            className="h-full min-h-[360px] w-full object-cover sm:min-h-[460px] lg:min-h-[520px]"
+          />
         </div>
       </section>
 
-      {/* Article Cards Grid */}
-      <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Intro Section */}
+      <section className="rounded-[2rem] border border-green-900/10 bg-[#fffdf5] p-7 shadow-lg shadow-green-900/5 sm:p-10">
+        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-green-900">
+              Featured Reads
+            </p>
+
+            <h2 className="mt-3 text-3xl font-black leading-tight text-green-900 sm:text-4xl">
+              Learn more about the flavor behind Ivanka.
+            </h2>
+
+            <div className="mt-4 h-1 w-12 rounded-full bg-yellow-500" />
+          </div>
+
+          <p className="text-base leading-8 text-zinc-700">
+            These articles highlight what makes Ivanka Calamansi Juice special:
+            its fresh taste, local inspiration, refreshing sweetness, and
+            proudly Pinoy identity.
+          </p>
+        </div>
+      </section>
+
+      {/* Article Cards Section */}
+      <section>
+        <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-green-900">
+              Latest Articles
+            </p>
+
+            <h2 className="mt-2 text-3xl font-black text-green-900">
+              Fresh Stories for Every Sip
+            </h2>
+          </div>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {articles.map((article, index) => (
             <article
-              key={index}
-              className="rounded-xl bg-[#f3efdd] p-4 flex flex-col"
+              key={article.title}
+              className="group overflow-hidden rounded-3xl border border-green-900/10 bg-[#fffdf5] shadow-lg shadow-green-900/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-green-900/10"
             >
-              {/* Article image */}
-              <div className="flex aspect-[4/3] items-center justify-center rounded-2xl bg-zinc-200 overflow-hidden">
+              <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={article.image}
                   alt={article.title}
-                  className="h-full w-full object-cover rounded-2xl"
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
               </div>
 
-              {/* Article details */}
-              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-700">
-                Article {index + 1}
-              </p>
-              <h3 className="mt-2 text-lg font-semibold text-green-900">
-                {article.title}
-              </h3>
-              <p className="mt-2 text-sm text-zinc-800">{article.description}</p>
+              <div className="flex min-h-[280px] flex-col p-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-zinc-600">
+                  Article {index + 1} / {article.category}
+                </p>
 
-              <Button className="mt-4">Read More</Button>
+                <h3 className="mt-3 text-xl font-black text-green-900">
+                  {article.title}
+                </h3>
+
+                <div className="mt-3 h-1 w-10 rounded-full bg-yellow-500" />
+
+                <p className="mt-4 flex-1 text-sm leading-6 text-zinc-700">
+                  {article.description}
+                </p>
+
+                <Button
+                  to="/articles"
+                  className="!relative !mt-6 !inline-flex !h-12 !w-[210px] !items-center !justify-center !rounded-full !border-0 !bg-green-900 !px-8 !text-[11px] !font-black !uppercase !tracking-[0.18em] !text-white !shadow-md !shadow-green-900/20 hover:!bg-green-800"
+                >
+                  <span>Read More</span>
+
+                  <span className="!absolute !right-7 !top-1/2 !flex !-translate-y-[55%] !items-center !justify-center text-base leading-none">
+                    ›
+                  </span>
+                </Button>
+              </div>
             </article>
           ))}
         </div>
       </section>
-
     </div>
-  );
-};
+  </main>
+);
 
 export default ArticlePage;

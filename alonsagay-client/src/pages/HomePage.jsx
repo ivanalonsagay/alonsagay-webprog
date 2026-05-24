@@ -70,37 +70,6 @@ const HomePage = () => (
             chill moments with friends and family.
           </p>
 
-          <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">🍋</span>
-              <p className="text-sm leading-5 text-zinc-700">
-                Real Calamansi <br />
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">🌱</span>
-              <p className="text-sm leading-5 text-zinc-700">
-                Locally Sourced <br />
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">🧃</span>
-              <p className="text-sm leading-5 text-zinc-700">
-                Made with Care in PH<br />
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">♡</span>
-              <p className="text-sm leading-5 text-zinc-700">
-                Loved by <br />
-                Families
-              </p>
-            </div>
-          </div>
-
           <div className="mt-9 flex flex-wrap gap-4">
             <Button
               to="/about"

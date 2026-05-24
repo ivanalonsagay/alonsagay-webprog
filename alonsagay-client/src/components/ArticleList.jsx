@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import Button from '../components/Button';
+import Button from './Button';
 
 import Article1 from '../assets/article2a.jpg';
 import Article2 from '../assets/article2b.jpg';

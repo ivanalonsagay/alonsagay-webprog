@@ -49,7 +49,7 @@ const articles = [
   },
 ];
 
-const ArticleDetailPage = () => {
+const ArticleList = () => {
   const { id } = useParams();
 
   const article = articles.find((item) => item.id === Number(id));
@@ -132,4 +132,4 @@ const ArticleDetailPage = () => {
   );
 };
 
-export default ArticleDetailPage;
+export default ArticleList;

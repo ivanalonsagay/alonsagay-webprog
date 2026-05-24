@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 // HomePage Structure
 import Layout from './components/Layout';
 import ArticlePage from './pages/ArticlePage';
-import ArticleDetailPage from './pages/ArticleDetailPage';
+import ArticleList from './pages/ArticleList';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -29,7 +29,7 @@ const routes = [
       },
       {
         path: 'articles/:id',
-        element: <ArticleDetailPage />,
+        element: <ArticleList />,
       },
       {
         path: '*',

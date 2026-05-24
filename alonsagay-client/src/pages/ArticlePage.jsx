@@ -36,21 +36,6 @@ const articles = [
   },
 ];
 
-const featuredTopics = [
-  {
-    icon: '🍊',
-    title: 'Tangy & Fresh',
-  },
-  {
-    icon: '🌱',
-    title: 'Healthy & Local',
-  },
-  {
-    icon: '🇵🇭',
-    title: 'Makabayan Flavor',
-  },
-];
-
 const ArticlePage = () => (
   <main className="min-h-screen w-full bg-[#fff9ea]">
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-10 px-5 pb-12 pt-8 sm:px-8 lg:px-12">
@@ -73,17 +58,6 @@ const ArticlePage = () => (
             taste to its proudly Pinoy flavor. Learn why this tangy and
             refreshing drink is perfect for everyday moments.
           </p>
-
-          <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-3">
-            {featuredTopics.map((topic) => (
-              <div key={topic.title} className="flex items-center gap-3">
-                <span className="text-3xl">{topic.icon}</span>
-                <p className="text-sm leading-5 text-zinc-700">
-                  {topic.title}
-                </p>
-              </div>
-            ))}
-          </div>
 
           <div className="mt-9 flex flex-wrap gap-4">
             <Button

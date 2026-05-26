@@ -36,11 +36,13 @@ import { getCurrentUser } from '../../constants';
 const roles = ['admin', 'editor', 'viewer'];
 const genders = ['male', 'female', 'other'];
 
+const USER_DISPLAY_ID_STORAGE_KEY = 'ivankaUserDisplayIds';
+
 const blankForm = {
   firstName: '',
   lastName: '',
   age: '',
-  gender: '',
+  gender: 'male',
   contactNumber: '',
   email: '',
   role: 'editor',
@@ -52,6 +54,74 @@ const blankForm = {
 
 const labelize = (value) =>
   value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
+
+const readDisplayIdMap = () => {
+  try {
+    const savedMap = localStorage.getItem(USER_DISPLAY_ID_STORAGE_KEY);
+
+    if (!savedMap) {
+      return {};
+    }
+
+    return JSON.parse(savedMap);
+  } catch {
+    return {};
+  }
+};
+
+const saveDisplayIdMap = (map) => {
+  localStorage.setItem(USER_DISPLAY_ID_STORAGE_KEY, JSON.stringify(map));
+};
+
+const getNextDisplayId = (displayIdMap) => {
+  const usedNumbers = Object.values(displayIdMap)
+    .map((value) => Number(value))
+    .filter((value) => Number.isFinite(value));
+
+  const highestNumber = usedNumbers.length > 0 ? Math.max(...usedNumbers) : 0;
+
+  return String(highestNumber + 1).padStart(4, '0');
+};
+
+const assignStableDisplayIds = (users) => {
+  const displayIdMap = readDisplayIdMap();
+  const nextMap = { ...displayIdMap };
+
+  const normalizedUsers = users.map((user) => {
+    const realId = String(user.id || user._id || '');
+
+    if (realId && !nextMap[realId]) {
+      nextMap[realId] = getNextDisplayId(nextMap);
+    }
+
+    return {
+      ...user,
+
+      // Keep the real MongoDB ID hidden for edit/update/disable actions.
+      id: realId,
+
+      // UI DISPLAY ID:
+      // Fixed 4-digit ID per user account.
+      // This is saved in localStorage and will not change when filtering/sorting.
+      displayId: realId ? nextMap[realId] : '0000',
+
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      age: user.age || '',
+      gender: user.gender || '',
+      contactNumber: user.contactNumber || '',
+      email: user.email || '',
+      role: user.role || 'editor',
+      username: user.username || '',
+      address: user.address || '',
+      isActive: Boolean(user.isActive),
+    };
+  });
+
+  saveDisplayIdMap(nextMap);
+
+  return normalizedUsers;
+};
 
 const UsersPage = () => {
   const theme = useTheme();
@@ -66,12 +136,15 @@ const UsersPage = () => {
   const [pageError, setPageError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // ENHANCEMENT 2:
-  // Search bar and dropdown filters for UsersPage.
+  // ENHANCEMENT:
+  // Search and filters for UsersPage.
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [genderFilter, setGenderFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  const currentRole = String(currentUser?.role || '').toLowerCase();
+  const isAdmin = currentRole === 'admin';
 
   const loadUsers = async () => {
     try {
@@ -80,35 +153,34 @@ const UsersPage = () => {
 
       const data = await UserService.getUsers();
 
-      setUsers(data);
+      setUsers(assignStableDisplayIds(data));
     } catch (error) {
-      setPageError(error.message);
+      setPageError(error.message || 'Unable to load users.');
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+    if (isAdmin) {
+      loadUsers();
+    }
+  }, [isAdmin]);
 
   const filteredUsers = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase();
 
     return users.filter((user) => {
-      const firstName = String(user.firstName || '').toLowerCase();
-      const lastName = String(user.lastName || '').toLowerCase();
-      const email = String(user.email || '').toLowerCase();
-      const username = String(user.username || '').toLowerCase();
-      const fullName = `${firstName} ${lastName}`.trim();
+      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
 
       const matchesSearch =
         !keyword ||
-        firstName.includes(keyword) ||
-        lastName.includes(keyword) ||
+        user.displayId.toLowerCase().includes(keyword) ||
+        user.firstName.toLowerCase().includes(keyword) ||
+        user.lastName.toLowerCase().includes(keyword) ||
         fullName.includes(keyword) ||
-        email.includes(keyword) ||
-        username.includes(keyword);
+        user.email.toLowerCase().includes(keyword) ||
+        user.username.toLowerCase().includes(keyword);
 
       const matchesRole = roleFilter === 'all' || user.role === roleFilter;
 
@@ -165,12 +237,8 @@ const UsersPage = () => {
     }
   };
 
-  // ENHANCEMENT 3:
+  // ENHANCEMENT:
   // Beginner-friendly validation rules.
-  // Password must be at least 8 characters.
-  // Contact number must be exactly 11 digits.
-  // Age must be a number only.
-  // Username must not contain spaces.
   const validate = () => {
     const nextErrors = {};
     const email = form.email.trim().toLowerCase();
@@ -261,7 +329,7 @@ const UsersPage = () => {
       await loadUsers();
       closeModal();
     } catch (error) {
-      setPageError(error.message);
+      setPageError(error.message || 'Unable to save user.');
     }
   };
 
@@ -272,7 +340,7 @@ const UsersPage = () => {
       await UserService.toggleUserStatus(id);
       await loadUsers();
     } catch (error) {
-      setPageError(error.message);
+      setPageError(error.message || 'Unable to update user status.');
     }
   };
 
@@ -296,9 +364,10 @@ const UsersPage = () => {
 
   const columns = [
     {
-      field: 'id',
+      field: 'displayId',
       headerName: 'ID',
-      width: 220,
+      width: 100,
+      sortable: true,
     },
     {
       field: 'fullName',
@@ -306,7 +375,7 @@ const UsersPage = () => {
       flex: 1,
       minWidth: 170,
       valueGetter: (value, row) =>
-        `${row.firstName || ''} ${row.lastName || ''}`.trim(),
+        `${row.firstName} ${row.lastName}`.trim(),
     },
     {
       field: 'username',
@@ -372,9 +441,7 @@ const UsersPage = () => {
     },
   ];
 
-  // ENHANCEMENT 1:
-  // Editors cannot access UsersPage.
-  if (currentUser?.role !== 'admin') {
+  if (!isAdmin) {
     return (
       <Box>
         <Alert severity="error">
@@ -401,7 +468,11 @@ const UsersPage = () => {
         <Button
           variant="contained"
           onClick={() => openModal()}
-          sx={{ width: { xs: '100%', sm: 'auto' } }}
+          sx={{
+            width: { xs: '100%', sm: 'auto' },
+            textTransform: 'none',
+            fontWeight: 700,
+          }}
         >
           Add User
         </Button>
@@ -417,7 +488,7 @@ const UsersPage = () => {
         <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2}>
           <TextField
             label="Search"
-            placeholder="Search by name, email, or username"
+            placeholder="Search by ID, name, email, or username"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             fullWidth
@@ -438,6 +509,7 @@ const UsersPage = () => {
               onChange={(event) => setRoleFilter(event.target.value)}
             >
               <MenuItem value="all">All Roles</MenuItem>
+
               {roles.map((role) => (
                 <MenuItem key={role} value={role}>
                   {labelize(role)}
@@ -454,6 +526,7 @@ const UsersPage = () => {
               onChange={(event) => setGenderFilter(event.target.value)}
             >
               <MenuItem value="all">All Genders</MenuItem>
+
               {genders.map((gender) => (
                 <MenuItem key={gender} value={gender}>
                   {labelize(gender)}
@@ -497,6 +570,11 @@ const UsersPage = () => {
                 },
               },
             }}
+            sx={{
+              '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus': {
+                outline: 'none',
+              },
+            }}
           />
         </Box>
       </Paper>
@@ -521,9 +599,7 @@ const UsersPage = () => {
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField {...fieldProps('age', 'Age')} />
 
-                <TextField
-                  {...fieldProps('gender', 'Gender', { select: true })}
-                >
+                <TextField {...fieldProps('gender', 'Gender', { select: true })}>
                   {genders.map((gender) => (
                     <MenuItem key={gender} value={gender}>
                       {labelize(gender)}
@@ -533,9 +609,7 @@ const UsersPage = () => {
               </Stack>
 
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <TextField
-                  {...fieldProps('contactNumber', 'Contact Number')}
-                />
+                <TextField {...fieldProps('contactNumber', 'Contact Number')} />
 
                 <TextField
                   {...fieldProps('email', 'Email Address', {

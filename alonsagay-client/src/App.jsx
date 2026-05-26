@@ -1,19 +1,34 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-// HomePage Structure
+// Main Website Layout
 import Layout from './components/Layout';
-import ArticlePage from './pages/ArticlePage';
-import ArticleList from './components/ArticleList';
-import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
+
+// Dashboard Layout
+import DashLayout from './layouts/DashLayout';
+
+// Landing Pages
+import HomePage from './pages/LandingPages/HomePage';
+import AboutPage from './pages/LandingPages/AboutPage';
+import ArticleListPage from './pages/LandingPages/ArticleListPage';
+import ArticlePage from './pages/LandingPages/ArticlePage';
+
+// Auth Pages
+import SignInPage from './pages/AuthPages/SignInPage';
+import SignUpPage from './pages/AuthPages/SignUpPage';
+
+// Dashboard Pages
+import DashboardPage from './pages/DashboardPages/DashboardPage';
+import ReportsPage from './pages/DashboardPages/ReportsPage';
+import UsersPage from './pages/DashboardPages/UsersPage';
+
+// Other Pages
 import NotFoundPage from './pages/NotFoundPage';
-import SignInPage from './pages/SignInPage';
-import SignUpPage from './pages/SignUpPage';
 
 const routes = [
   {
     path: '/',
     element: <Layout />,
+    errorElement: <NotFoundPage />,
     children: [
       {
         path: '',
@@ -25,11 +40,11 @@ const routes = [
       },
       {
         path: 'articles',
-        element: <ArticlePage />,
+        element: <ArticleListPage />,
       },
       {
         path: 'articles/:id',
-        element: <ArticleList />,
+        element: <ArticlePage />,
       },
       {
         path: '*',
@@ -44,6 +59,25 @@ const routes = [
   {
     path: '/signup',
     element: <SignUpPage />,
+  },
+  {
+    path: '/dashboard',
+    element: <DashLayout />,
+    errorElement: <NotFoundPage />,
+    children: [
+      {
+        path: '',
+        element: <DashboardPage />,
+      },
+      {
+        path: 'reports',
+        element: <ReportsPage />,
+      },
+      {
+        path: 'users',
+        element: <UsersPage />,
+      },
+    ],
   },
 ];
 

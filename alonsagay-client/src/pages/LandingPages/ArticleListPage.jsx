@@ -1,9 +1,8 @@
 import Button from '../../components/Button.jsx';
 import ArticleList from '../../components/ArticleList.jsx';
-import articles from '../../assets/article-content.js';
+import articles from '../../data/article-content.js';
 
 import HeroImage from '../../assets/article1a.png';
-
 
 const ArticleListPage = () => {
   return (

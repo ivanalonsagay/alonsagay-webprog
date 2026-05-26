@@ -1,7 +1,7 @@
-import Article1 from './article2a.jpg';
-import Article2 from './article2b.jpg';
-import Article3 from './article2c.jpg';
-import Article4 from './article2d.jpg';
+import Article1 from '../assets/article2a.jpg';
+import Article2 from '../assets/article2b.jpg';
+import Article3 from '../assets/article2c.jpg';
+import Article4 from '../assets/article2d.jpg';
 
 const articles = [
   {

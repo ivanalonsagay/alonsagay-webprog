@@ -1,19 +1,21 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-// HomePage Structure
+// Main Website Layout
 import Layout from './components/Layout';
-import ArticlePage from './pages/ArticlePage';
-import ArticleList from './components/ArticleList';
+
+// Pages
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
-import NotFoundPage from './pages/NotFoundPage';
+import ArticlePage from './pages/ArticlePage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 const routes = [
   {
     path: '/',
     element: <Layout />,
+    errorElement: <NotFoundPage />,
     children: [
       {
         path: '',
@@ -26,10 +28,6 @@ const routes = [
       {
         path: 'articles',
         element: <ArticlePage />,
-      },
-      {
-        path: 'articles/:id',
-        element: <ArticleList />,
       },
       {
         path: '*',

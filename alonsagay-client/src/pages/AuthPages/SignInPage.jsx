@@ -169,14 +169,6 @@ const SignInPage = () => {
             </Link>
           </p>
 
-          <p className="mt-4 text-center text-sm text-zinc-600">
-            <Link
-              to="/"
-              className="font-bold text-green-900 underline-offset-4 hover:underline"
-            >
-              Back to home
-            </Link>
-          </p>
         </section>
       </div>
     </main>

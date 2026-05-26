@@ -30,6 +30,10 @@ const routes = [
         element: <ArticlePage />,
       },
       {
+        path: 'articles/:id',
+        element: <ArticlePage />,
+      },
+      {
         path: '*',
         element: <NotFoundPage />,
       },

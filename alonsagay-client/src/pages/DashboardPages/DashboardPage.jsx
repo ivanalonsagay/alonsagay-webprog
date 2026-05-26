@@ -1,77 +1,13 @@
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import CardContent from '@mui/material/CardContent';
 
-import { BarChart, PieChart } from '@mui/x-charts';
 import { DataGrid } from '@mui/x-data-grid';
-
-const rows = [
-  {
-    id: 1,
-    firstName: 'Miguel',
-    lastName: 'Santos',
-    age: 22,
-    fullName: 'Miguel Santos',
-  },
-  {
-    id: 2,
-    firstName: 'Andrea',
-    lastName: 'Reyes',
-    age: 24,
-    fullName: 'Andrea Reyes',
-  },
-  {
-    id: 3,
-    firstName: 'Paolo',
-    lastName: 'Dela Cruz',
-    age: 21,
-    fullName: 'Paolo Dela Cruz',
-  },
-  {
-    id: 4,
-    firstName: 'Janelle',
-    lastName: 'Garcia',
-    age: 23,
-    fullName: 'Janelle Garcia',
-  },
-  {
-    id: 5,
-    firstName: 'Rafael',
-    lastName: 'Mendoza',
-    age: 27,
-    fullName: 'Rafael Mendoza',
-  },
-  {
-    id: 6,
-    firstName: 'Katrina',
-    lastName: 'Villanueva',
-    age: 25,
-    fullName: 'Katrina Villanueva',
-  },
-  {
-    id: 7,
-    firstName: 'Mark',
-    lastName: 'Aquino',
-    age: 26,
-    fullName: 'Mark Aquino',
-  },
-  {
-    id: 8,
-    firstName: 'Bianca',
-    lastName: 'Ramos',
-    age: 20,
-    fullName: 'Bianca Ramos',
-  },
-  {
-    id: 9,
-    firstName: 'Christian',
-    lastName: 'Navarro',
-    age: 28,
-    fullName: 'Christian Navarro',
-  },
-];
+import { BarChart } from '@mui/x-charts/BarChart';
+import { PieChart } from '@mui/x-charts/PieChart';
+import { Gauge } from '@mui/x-charts/Gauge';
 
 const columns = [
   {
@@ -81,15 +17,13 @@ const columns = [
   },
   {
     field: 'firstName',
-    headerName: 'First name',
-    flex: 1,
-    minWidth: 150,
+    headerName: 'First Name',
+    width: 150,
   },
   {
     field: 'lastName',
-    headerName: 'Last name',
-    flex: 1,
-    minWidth: 150,
+    headerName: 'Last Name',
+    width: 150,
   },
   {
     field: 'age',
@@ -99,49 +33,51 @@ const columns = [
   },
   {
     field: 'fullName',
-    headerName: 'Full name',
-    flex: 1,
-    minWidth: 180,
+    headerName: 'Full Name',
+    width: 180,
+    valueGetter: (value, row) =>
+      `${row.firstName || ''} ${row.lastName || ''}`.trim(),
   },
 ];
 
-const averageAge = (
-  rows.reduce((total, row) => total + row.age, 0) / rows.length
-).toFixed(1);
+const rows = [
+  { id: 1, firstName: 'Miguel', lastName: 'Reyes', age: 21 },
+  { id: 2, firstName: 'Andrea', lastName: 'Santos', age: 22 },
+  { id: 3, firstName: 'Paolo', lastName: 'Cruz', age: 23 },
+  { id: 4, firstName: 'Janelle', lastName: 'Garcia', age: 20 },
+  { id: 5, firstName: 'Rafael', lastName: 'Mendoza', age: 24 },
+  { id: 6, firstName: 'Camille', lastName: 'Torres', age: 21 },
+  { id: 7, firstName: 'Joshua', lastName: 'Villanueva', age: 25 },
+  { id: 8, firstName: 'Bianca', lastName: 'Flores', age: 22 },
+  { id: 9, firstName: 'Mark', lastName: 'Navarro', age: 23 },
+];
 
-function DashboardPage() {
+const DashboardPage = () => {
+  const averageAge =
+    rows.reduce((sum, row) => sum + row.age, 0) / rows.length;
+
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Typography variant="h4" gutterBottom>
         Dashboard
       </Typography>
 
       <Stack
-        direction={{ xs: 'column', sm: 'row' }}
+        direction={{ xs: 'column', md: 'row' }}
         spacing={2}
         sx={{ mb: 4 }}
       >
-        <Card sx={{ minWidth: 160 }}>
+        <Card sx={{ minWidth: 180 }}>
           <CardContent>
-            <Typography variant="body2" color="text.secondary">
-              Total Users
-            </Typography>
-
-            <Typography variant="h4" fontWeight={700}>
-              {rows.length}
-            </Typography>
+            <Typography variant="h6">Total Users</Typography>
+            <Typography variant="h4">{rows.length}</Typography>
           </CardContent>
         </Card>
 
-        <Card sx={{ minWidth: 160 }}>
+        <Card sx={{ minWidth: 180 }}>
           <CardContent>
-            <Typography variant="body2" color="text.secondary">
-              Average Age
-            </Typography>
-
-            <Typography variant="h4" fontWeight={700}>
-              {averageAge}
-            </Typography>
+            <Typography variant="h6">Average Age</Typography>
+            <Typography variant="h4">{averageAge.toFixed(1)}</Typography>
           </CardContent>
         </Card>
       </Stack>
@@ -149,12 +85,16 @@ function DashboardPage() {
       <Stack
         direction={{ xs: 'column', lg: 'row' }}
         spacing={3}
-        sx={{ mb: 5 }}
+        sx={{ mb: 4 }}
+        alignItems="center"
       >
-        <Card sx={{ flex: 1 }}>
+        <Card sx={{ flex: 1, width: '100%' }}>
           <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Quarterly Sales
+            </Typography>
+
             <BarChart
-              height={300}
               series={[
                 {
                   data: [35, 44, 24, 34],
@@ -165,6 +105,7 @@ function DashboardPage() {
                   label: 'Series 2',
                 },
               ]}
+              height={300}
               xAxis={[
                 {
                   data: ['Q1', 'Q2', 'Q3', 'Q4'],
@@ -176,46 +117,76 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card sx={{ width: { xs: '100%', lg: 360 } }}>
+        <Card sx={{ width: { xs: '100%', lg: 320 } }}>
           <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Category Share
+            </Typography>
+
             <PieChart
-              height={300}
               series={[
                 {
                   data: [
-                    { id: 0, value: 10, label: 'Group A' },
-                    { id: 1, value: 15, label: 'Group B' },
-                    { id: 2, value: 20, label: 'Group C' },
+                    { id: 0, value: 10, label: 'Sales' },
+                    { id: 1, value: 15, label: 'Users' },
+                    { id: 2, value: 20, label: 'Reports' },
                   ],
                 },
               ]}
+              width={250}
+              height={250}
             />
           </CardContent>
         </Card>
       </Stack>
 
-      <Typography variant="h6" fontWeight={700} gutterBottom>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={3}
+        sx={{ mb: 4 }}
+      >
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Completion Rate
+            </Typography>
+            <Gauge width={180} height={180} value={78} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Performance Rate
+            </Typography>
+            <Gauge width={180} height={180} value={64} />
+          </CardContent>
+        </Card>
+      </Stack>
+
+      <Typography variant="h5" gutterBottom>
         Users Overview
       </Typography>
 
-      <Box sx={{ height: 400, width: '100%' }}>
+      <Box sx={{ height: 420, width: '100%' }}>
         <DataGrid
           rows={rows}
           columns={columns}
+          pageSizeOptions={[5, 10]}
           initialState={{
             pagination: {
               paginationModel: {
                 pageSize: 5,
+                page: 0,
               },
             },
           }}
-          pageSizeOptions={[5]}
           checkboxSelection
           disableRowSelectionOnClick
         />
       </Box>
     </Box>
   );
-}
+};
 
 export default DashboardPage;

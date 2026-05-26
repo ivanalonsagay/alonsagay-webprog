@@ -1,138 +1,185 @@
-import { Link } from 'react-router-dom';
-import Button from '../../components/Button';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-const inputClasses =
-  'mt-2 w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-zinc-50';
-
-const actionButtonClassName =
-  'w-full rounded-xl py-3 text-[11px] tracking-[0.2em]';
-
-const socialButtonClassName =
-  'flex w-full items-center justify-center gap-3 rounded-xl py-3 text-[11px] tracking-[0.2em]';
-
-const AppleIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="h-5 w-5 fill-current"
-    aria-hidden="true"
-  >
-    <path d="M16.365 1.43c0 1.14-.42 2.11-1.25 2.93-.88.86-1.88 1.36-2.98 1.28-.14-1.09.41-2.19 1.2-2.99.87-.88 2.06-1.52 3.03-1.22zM20.43 17.32c-.54 1.25-.8 1.8-1.49 2.9-.97 1.47-2.33 3.31-4.02 3.33-1.5.02-1.89-.98-3.93-.97-2.04.01-2.47 1-3.97.98-1.69.01-2.98-1.67-3.95-3.14-2.7-4.12-2.98-8.95-1.32-11.52 1.18-1.83 3.05-2.9 4.81-2.9 1.79 0 2.92.99 4.4.99 1.44 0 2.32-.99 4.39-.99 1.57 0 3.23.85 4.4 2.33-3.87 2.12-3.24 7.65.68 8.99z" />
-  </svg>
-);
-
-const GoogleIcon = () => (
-  <span className="text-base font-black normal-case tracking-normal text-zinc-900">
-    G
-  </span>
-);
+import Logo from '../../assets/logo.png';
+import UserService from '../../services/userService';
+import { clearAuth, saveAuth } from '../../constants';
 
 const SignInPage = () => {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    emailOrUsername: '',
+    password: '',
+  });
+
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (event) => {
+    setForm((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+
+    setError('');
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      setIsLoading(true);
+      setError('');
+      clearAuth();
+
+      const data = await UserService.login({
+        emailOrUsername: form.emailOrUsername.trim(),
+        password: form.password,
+      });
+
+      // ENHANCEMENT 1:
+      // Viewers cannot log in.
+      if (data.user?.role === 'viewer') {
+        clearAuth();
+        setError('Viewers are not allowed to log in.');
+        return;
+      }
+
+      saveAuth({
+        token: data.token,
+        user: data.user,
+      });
+
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message || 'Unable to sign in.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <>
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
-        Log In
-      </h1>
-
-      <p className="mt-3 text-sm leading-6 text-zinc-600">
-        Access your account using the same monochrome wireframe language used
-        across the site.
-      </p>
-
-      <form className="mt-8 space-y-5">
-        <div>
-          <label
-            htmlFor="signin-email"
-            className="text-sm font-medium text-zinc-700"
-          >
-            Email Address
-          </label>
-
-          <input
-            id="signin-email"
-            type="email"
-            placeholder="Placeholder"
-            autoComplete="email"
-            className={inputClasses}
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="signin-password"
-            className="text-sm font-medium text-zinc-700"
-          >
-            Password
-          </label>
-
-          <input
-            id="signin-password"
-            type="password"
-            placeholder="Placeholder"
-            autoComplete="current-password"
-            className={inputClasses}
+    <main className="min-h-screen w-full bg-[#fff9ea]">
+      <div className="mx-auto grid min-h-screen w-full max-w-[1500px] items-center gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
+        <section className="hidden flex-col items-center text-center lg:flex">
+          <img
+            src={Logo}
+            alt="Ivanka Calamansi Juice"
+            className="mx-auto h-56 w-auto"
           />
 
-          <p className="mt-2 text-xs leading-5 text-zinc-500">
-            It must be a combination of minimum 8 letters, numbers, and symbols.
+          <div className="mt-16 inline-flex items-center justify-center gap-2 rounded-full bg-[#edf5d9] px-5 py-2 text-sm font-bold uppercase tracking-[0.18em] text-green-900">
+            <span>🌿</span>
+            <span>100% Pinoy. 100% Fresh.</span>
+          </div>
+
+          <h1 className="mt-8 max-w-xl text-6xl font-black leading-[1.08] tracking-tight text-green-900">
+            Freshness You Can Trust.
+          </h1>
+
+          <div className="mt-5 h-1 w-14 rounded-full bg-yellow-500" />
+
+          <p className="mt-7 max-w-md text-base leading-8 text-zinc-700">
+            Welcome back! Sign in to continue exploring Ivanka stories,
+            dashboard tools, reports, and user records.
           </p>
-        </div>
+        </section>
 
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <label className="flex items-center gap-2 text-zinc-600">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-zinc-300 accent-zinc-900"
+        <section className="mx-auto w-full max-w-[460px] rounded-[2rem] border border-green-900/10 bg-white/90 p-7 shadow-2xl shadow-green-900/10 backdrop-blur sm:p-9">
+          <div className="mb-8 flex justify-center lg:hidden">
+            <img
+              src={Logo}
+              alt="Ivanka Calamansi Juice"
+              className="mx-auto h-20 w-auto"
             />
-            <span>Remember me</span>
-          </label>
+          </div>
 
-          <button
-            type="button"
-            className="font-medium text-zinc-700 transition hover:text-zinc-900"
-          >
-            Forgot Password?
-          </button>
-        </div>
+          <h2 className="text-4xl font-black tracking-tight text-green-900">
+            Sign in
+          </h2>
 
-        <Button
-          type="submit"
-          variant="primary"
-          className={actionButtonClassName}
-        >
-          Log In
-        </Button>
+          <p className="mt-3 text-sm leading-6 text-zinc-600">
+            Use your email or username to access your account.
+          </p>
 
-        <div className="grid gap-3 pt-2 sm:grid-cols-2">
-          <Button
-            type="button"
-            variant="secondary"
-            className={socialButtonClassName}
-          >
-            <GoogleIcon />
-            <span>Google</span>
-          </Button>
+          {error ? (
+            <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+              {error}
+            </div>
+          ) : null}
 
-          <Button
-            type="button"
-            variant="secondary"
-            className={socialButtonClassName}
-          >
-            <AppleIcon />
-            <span>Apple</span>
-          </Button>
-        </div>
-      </form>
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="emailOrUsername"
+                className="text-sm font-bold text-zinc-900"
+              >
+                Email or username
+              </label>
 
-      <div className="mt-8 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
-        No account yet?{' '}
-        <Link
-          to="/auth/signup"
-          className="font-semibold text-zinc-900 transition hover:text-zinc-600"
-        >
-          Sign Up
-        </Link>
+              <input
+                id="emailOrUsername"
+                type="text"
+                name="emailOrUsername"
+                value={form.emailOrUsername}
+                onChange={handleChange}
+                placeholder="Enter your email or username"
+                className="mt-2 h-14 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm text-zinc-800 shadow-sm outline-none placeholder:text-zinc-400 focus:border-green-800"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="text-sm font-bold text-zinc-900"
+              >
+                Password
+              </label>
+
+              <input
+                id="password"
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className="mt-2 h-14 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm text-zinc-800 shadow-sm outline-none placeholder:text-zinc-400 focus:border-green-800"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="h-14 w-full rounded-xl bg-green-900 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg shadow-green-900/20 transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+
+          <p className="mt-9 text-center text-sm text-zinc-600">
+            Do not have an account?{' '}
+            <Link
+              to="/auth/signup"
+              className="font-black text-green-900 underline-offset-4 hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
+
+          <p className="mt-4 text-center text-sm text-zinc-600">
+            <Link
+              to="/"
+              className="font-bold text-green-900 underline-offset-4 hover:underline"
+            >
+              Back to home
+            </Link>
+          </p>
+        </section>
       </div>
-    </>
+    </main>
   );
 };
 

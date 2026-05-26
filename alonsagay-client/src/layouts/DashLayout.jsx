@@ -32,6 +32,9 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import PeopleIcon from '@mui/icons-material/People';
+import ArticleIcon from '@mui/icons-material/Article';
+
+import { clearAuth, getCurrentUser } from '../constants';
 
 const drawerWidth = 240;
 
@@ -49,6 +52,12 @@ const dashboardNavItems = [
     icon: AssessmentIcon,
   },
   {
+    label: 'Articles',
+    title: 'Articles',
+    to: '/dashboard/articles',
+    icon: ArticleIcon,
+  },
+  {
     label: 'Users',
     title: 'Users',
     to: '/dashboard/users',
@@ -58,11 +67,11 @@ const dashboardNavItems = [
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
+  overflowX: 'hidden',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
-  overflowX: 'hidden',
 });
 
 const closedMixin = (theme) => ({
@@ -178,6 +187,19 @@ const DashLayout = () => {
 
   const [open, setOpen] = useState(true);
 
+  const currentUser = getCurrentUser();
+  const currentRole = String(currentUser?.role || '').toLowerCase();
+
+  // ENHANCEMENT 1:
+  // Editors cannot access UsersPage, so the Users nav item is hidden for editors.
+  const visibleNavItems = dashboardNavItems.filter((item) => {
+    if (item.to === '/dashboard/users') {
+      return currentRole === 'admin';
+    }
+
+    return true;
+  });
+
   const pageTitle = getPageTitle(location.pathname);
 
   const handleDrawerToggle = () => {
@@ -189,7 +211,8 @@ const DashLayout = () => {
   };
 
   const handleLogout = () => {
-    navigate('/');
+    clearAuth();
+    navigate('/auth/signin');
   };
 
   return (
@@ -251,7 +274,7 @@ const DashLayout = () => {
         <Divider />
 
         <List>
-          {dashboardNavItems.map(({ label, to, icon: Icon }) => (
+          {visibleNavItems.map(({ label, to, icon: Icon }) => (
             <ListItem key={to} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 component={RouterLink}
@@ -290,6 +313,7 @@ const DashLayout = () => {
         }}
       >
         <DrawerHeader />
+
         <Outlet />
       </Box>
     </Box>

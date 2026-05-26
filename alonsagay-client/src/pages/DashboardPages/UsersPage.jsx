@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   Alert,
@@ -30,7 +30,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SearchIcon from '@mui/icons-material/Search';
 import { DataGrid } from '@mui/x-data-grid';
 
-import usersSeed from '../../data/users.json?raw';
+import UserService from '../../services/userService';
+import { getCurrentUser } from '../../constants';
 
 const roles = ['admin', 'editor', 'viewer'];
 const genders = ['male', 'female', 'other'];
@@ -52,80 +53,65 @@ const blankForm = {
 const labelize = (value) =>
   value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
 
-const loadUsers = () => {
-  try {
-    return {
-      users: JSON.parse(usersSeed).map((user, index) => ({
-        id: Number(user.id) || index + 1,
-        firstName: String(user.firstName ?? '').trim(),
-        lastName: String(user.lastName ?? '').trim(),
-        age: String(user.age ?? '').trim(),
-        gender: genders.includes(String(user.gender ?? '').trim().toLowerCase())
-          ? String(user.gender ?? '').trim().toLowerCase()
-          : '',
-        contactNumber: String(user.contactNumber ?? '').trim(),
-        email: String(user.email ?? '').trim().toLowerCase(),
-        role: roles.includes(String(user.role ?? '').trim().toLowerCase())
-          ? String(user.role ?? '').trim().toLowerCase()
-          : 'editor',
-        username: String(user.username ?? '').trim().toLowerCase(),
-        password: String(user.password ?? ''),
-        address: String(user.address ?? '').trim(),
-        isActive: typeof user.isActive === 'boolean' ? user.isActive : true,
-      })),
-      error: '',
-    };
-  } catch {
-    return {
-      users: [],
-      error: 'Unable to read users from src/data/users.json.',
-    };
-  }
-};
-
-const seed = loadUsers();
-
 const UsersPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const currentUser = getCurrentUser();
 
-  const [users, setUsers] = useState(seed.users);
+  const [users, setUsers] = useState([]);
   const [modal, setModal] = useState({ open: false, id: null });
   const [form, setForm] = useState(blankForm);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [pageError, setPageError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  /*
-    ENHANCEMENT 2:
-    Search and filter states.
-
-    The search bar lets users search by firstName, lastName, email, or username.
-    The dropdown filters let users filter by role, gender, and status.
-  */
+  // ENHANCEMENT 2:
+  // Search bar and dropdown filters for UsersPage.
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [genderFilter, setGenderFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  /*
-    ENHANCEMENT 2:
-    This filteredUsers variable updates the table based on search and filters.
-  */
+  const loadUsers = async () => {
+    try {
+      setIsLoading(true);
+      setPageError('');
+
+      const data = await UserService.getUsers();
+
+      setUsers(data);
+    } catch (error) {
+      setPageError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
   const filteredUsers = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase();
 
     return users.filter((user) => {
-      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      const firstName = String(user.firstName || '').toLowerCase();
+      const lastName = String(user.lastName || '').toLowerCase();
+      const email = String(user.email || '').toLowerCase();
+      const username = String(user.username || '').toLowerCase();
+      const fullName = `${firstName} ${lastName}`.trim();
 
       const matchesSearch =
         !keyword ||
-        user.firstName.toLowerCase().includes(keyword) ||
-        user.lastName.toLowerCase().includes(keyword) ||
+        firstName.includes(keyword) ||
+        lastName.includes(keyword) ||
         fullName.includes(keyword) ||
-        user.email.toLowerCase().includes(keyword) ||
-        user.username.toLowerCase().includes(keyword);
+        email.includes(keyword) ||
+        username.includes(keyword);
 
       const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+
       const matchesGender =
         genderFilter === 'all' || user.gender === genderFilter;
 
@@ -145,7 +131,17 @@ const UsersPage = () => {
 
   const openModal = (user) => {
     setModal({ open: true, id: user?.id ?? null });
-    setForm(user ? { ...blankForm, ...user } : { ...blankForm });
+
+    setForm(
+      user
+        ? {
+            ...blankForm,
+            ...user,
+            password: '',
+          }
+        : { ...blankForm }
+    );
+
     setErrors({});
   };
 
@@ -162,25 +158,24 @@ const UsersPage = () => {
     }));
 
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: '',
+      }));
     }
   };
 
-  /*
-    ENHANCEMENT 3:
-    Beginner-friendly form validation rules.
-
-    Rules added:
-    1. Password must be at least 8 characters.
-    2. Contact number must be exactly 11 digits.
-    3. Age must be number only.
-    4. Username must not contain spaces.
-  */
+  // ENHANCEMENT 3:
+  // Beginner-friendly validation rules.
+  // Password must be at least 8 characters.
+  // Contact number must be exactly 11 digits.
+  // Age must be a number only.
+  // Username must not contain spaces.
   const validate = () => {
     const nextErrors = {};
     const email = form.email.trim().toLowerCase();
     const username = form.username.trim().toLowerCase();
-    const age = form.age.trim();
+    const age = form.age.toString().trim();
     const contactNumber = form.contactNumber.trim();
     const password = form.password;
 
@@ -193,7 +188,6 @@ const UsersPage = () => {
       ['email', 'Email'],
       ['role', 'Role'],
       ['username', 'Username'],
-      ['password', 'Password'],
       ['address', 'Address'],
     ].forEach(([key, label]) => {
       if (!String(form[key]).trim()) {
@@ -201,23 +195,23 @@ const UsersPage = () => {
       }
     });
 
-    // ENHANCEMENT 3: Age must be numbers only.
+    if (!modal.id && !password.trim()) {
+      nextErrors.password = 'Password is required.';
+    }
+
     if (!nextErrors.age && !/^\d+$/.test(age)) {
       nextErrors.age = 'Age must be a number only.';
     }
 
-    // ENHANCEMENT 3: Contact number must be exactly 11 digits.
     if (!nextErrors.contactNumber && !/^\d{11}$/.test(contactNumber)) {
       nextErrors.contactNumber = 'Contact number must be exactly 11 digits.';
     }
 
-    // ENHANCEMENT 3: Username must not contain spaces.
     if (!nextErrors.username && /\s/.test(username)) {
       nextErrors.username = 'Username must not contain spaces.';
     }
 
-    // ENHANCEMENT 3: Password must be at least 8 characters.
-    if (!nextErrors.password && password.length < 8) {
+    if (password && password.length < 8) {
       nextErrors.password = 'Password must be at least 8 characters.';
     }
 
@@ -225,26 +219,10 @@ const UsersPage = () => {
       nextErrors.email = 'Enter a valid email address.';
     }
 
-    if (
-      !nextErrors.email &&
-      users.some((user) => user.id !== modal.id && user.email === email)
-    ) {
-      nextErrors.email = 'Email address already exists.';
-    }
-
-    if (
-      !nextErrors.username &&
-      users.some(
-        (user) => user.id !== modal.id && user.username === username
-      )
-    ) {
-      nextErrors.username = 'Username already exists.';
-    }
-
     return nextErrors;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const nextErrors = validate();
@@ -254,47 +232,48 @@ const UsersPage = () => {
       return;
     }
 
-    const nextUser = {
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      age: form.age.trim(),
-      gender: form.gender.trim().toLowerCase(),
-      contactNumber: form.contactNumber.trim(),
-      email: form.email.trim().toLowerCase(),
-      role: form.role.trim().toLowerCase(),
-      username: form.username.trim().toLowerCase(),
-      password: form.password,
-      address: form.address.trim(),
-      isActive: form.isActive,
-    };
+    try {
+      setPageError('');
 
-    setUsers((prev) =>
-      modal.id
-        ? prev.map((user) =>
-            user.id === modal.id ? { ...user, ...nextUser } : user
-          )
-        : [
-            ...prev,
-            {
-              id:
-                prev.reduce(
-                  (max, user) => Math.max(max, Number(user.id) || 0),
-                  0
-                ) + 1,
-              ...nextUser,
-            },
-          ]
-    );
+      const payload = {
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        age: form.age.toString().trim(),
+        gender: form.gender.trim().toLowerCase(),
+        contactNumber: form.contactNumber.trim(),
+        email: form.email.trim().toLowerCase(),
+        role: form.role.trim().toLowerCase(),
+        username: form.username.trim().toLowerCase(),
+        address: form.address.trim(),
+        isActive: form.isActive,
+      };
 
-    closeModal();
+      if (form.password.trim()) {
+        payload.password = form.password;
+      }
+
+      if (modal.id) {
+        await UserService.updateUser(modal.id, payload);
+      } else {
+        await UserService.createUser(payload);
+      }
+
+      await loadUsers();
+      closeModal();
+    } catch (error) {
+      setPageError(error.message);
+    }
   };
 
-  const toggleStatus = (id) => {
-    setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id ? { ...user, isActive: !user.isActive } : user
-      )
-    );
+  const toggleStatus = async (id) => {
+    try {
+      setPageError('');
+
+      await UserService.toggleUserStatus(id);
+      await loadUsers();
+    } catch (error) {
+      setPageError(error.message);
+    }
   };
 
   const resetFilters = () => {
@@ -319,7 +298,7 @@ const UsersPage = () => {
     {
       field: 'id',
       headerName: 'ID',
-      width: 80,
+      width: 220,
     },
     {
       field: 'fullName',
@@ -327,7 +306,7 @@ const UsersPage = () => {
       flex: 1,
       minWidth: 170,
       valueGetter: (value, row) =>
-        `${row.firstName} ${row.lastName}`.trim(),
+        `${row.firstName || ''} ${row.lastName || ''}`.trim(),
     },
     {
       field: 'username',
@@ -393,6 +372,18 @@ const UsersPage = () => {
     },
   ];
 
+  // ENHANCEMENT 1:
+  // Editors cannot access UsersPage.
+  if (currentUser?.role !== 'admin') {
+    return (
+      <Box>
+        <Alert severity="error">
+          Access denied. Only admins can access the Users page.
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ width: '100%', minWidth: 0 }}>
       <Box
@@ -416,16 +407,14 @@ const UsersPage = () => {
         </Button>
       </Box>
 
-      {seed.error ? (
+      {pageError ? (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {seed.error}
+          {pageError}
         </Alert>
       ) : null}
 
-      {/* ENHANCEMENT 2: Search bar and dropdown filters */}
       <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2 }}>
         <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2}>
-          {/* ENHANCEMENT 2: Search by first name, last name, email, or username */}
           <TextField
             label="Search"
             placeholder="Search by name, email, or username"
@@ -441,7 +430,6 @@ const UsersPage = () => {
             }}
           />
 
-          {/* ENHANCEMENT 2: Dropdown filter for role */}
           <FormControl fullWidth>
             <InputLabel>Role</InputLabel>
             <Select
@@ -458,7 +446,6 @@ const UsersPage = () => {
             </Select>
           </FormControl>
 
-          {/* ENHANCEMENT 2: Dropdown filter for gender */}
           <FormControl fullWidth>
             <InputLabel>Gender</InputLabel>
             <Select
@@ -475,7 +462,6 @@ const UsersPage = () => {
             </Select>
           </FormControl>
 
-          {/* ENHANCEMENT 2: Dropdown filter for active/inactive status */}
           <FormControl fullWidth>
             <InputLabel>Status</InputLabel>
             <Select
@@ -496,34 +482,23 @@ const UsersPage = () => {
       </Paper>
 
       <Paper sx={{ p: { xs: 1.5, sm: 2 }, minWidth: 0, overflow: 'hidden' }}>
-        {filteredUsers.length ? (
-          <Box sx={{ height: { xs: 460, sm: 520 }, width: '100%', minWidth: 0 }}>
-            <DataGrid
-              rows={filteredUsers}
-              columns={columns}
-              disableRowSelectionOnClick
-              pageSizeOptions={[5, 10]}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 5,
-                    page: 0,
-                  },
+        <Box sx={{ height: { xs: 460, sm: 520 }, width: '100%', minWidth: 0 }}>
+          <DataGrid
+            rows={filteredUsers}
+            columns={columns}
+            loading={isLoading}
+            disableRowSelectionOnClick
+            pageSizeOptions={[5, 10]}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                  page: 0,
                 },
-              }}
-              sx={{
-                minWidth: 0,
-                '& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader': {
-                  outline: 'none',
-                },
-              }}
-            />
-          </Box>
-        ) : (
-          <Alert severity="info">
-            No users found. Try changing your search or filters.
-          </Alert>
-        )}
+              },
+            }}
+          />
+        </Box>
       </Paper>
 
       <Dialog
@@ -584,33 +559,23 @@ const UsersPage = () => {
               <TextField
                 {...fieldProps('password', 'Password', {
                   type: showPassword ? 'text' : 'password',
-                  slotProps: {
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            edge="end"
-                            onClick={() =>
-                              setShowPassword((prev) => !prev)
-                            }
-                            onMouseDown={(event) => {
-                              event.preventDefault();
-                            }}
-                            aria-label={
-                              showPassword
-                                ? 'Hide password'
-                                : 'Show password'
-                            }
-                          >
-                            {showPassword ? (
-                              <VisibilityOff />
-                            ) : (
-                              <Visibility />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
+                  placeholder: modal.id
+                    ? 'Leave blank to keep current password'
+                    : 'Enter password',
+                  InputProps: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          edge="end"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          onMouseDown={(event) => {
+                            event.preventDefault();
+                          }}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   },
                 })}
               />

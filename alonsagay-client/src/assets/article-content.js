@@ -7,6 +7,7 @@ const articles = [
   {
     id: 'fresh-calamansi-juice',
     image: Article1,
+    category: 'Fresh Taste',
     title: 'Fresh Calamansi Juice',
     description:
       'Natural, tangy, and full of Vitamin C. Perfect for hot days and bonding moments.',
@@ -16,6 +17,7 @@ const articles = [
   {
     id: 'healthy-and-local',
     image: Article2,
+    category: 'Local Goodness',
     title: 'Healthy and Local',
     description:
       'Made from locally grown calamansi, crafted for every Filipino home.',
@@ -25,6 +27,7 @@ const articles = [
   {
     id: 'sweet-and-refreshing',
     image: Article3,
+    category: 'Everyday Refreshment',
     title: 'Sweet and Refreshing',
     description:
       'A sweet and citrusy drink that helps beat the heat anytime of the day.',
@@ -34,6 +37,7 @@ const articles = [
   {
     id: 'makabayan-flavors',
     image: Article4,
+    category: 'Pinoy Pride',
     title: 'Makabayan Flavors',
     description:
       'Proudly Pinoy-made with refreshing flavors inspired by local taste.',

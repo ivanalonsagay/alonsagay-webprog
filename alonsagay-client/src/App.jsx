@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-// Main Website Layout
+// Public Website Layout
 import Layout from './components/Layout';
+
+// Protected Route
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Dashboard Layout
@@ -27,11 +29,36 @@ import DashArticleListPage from './pages/DashboardPages/DashArticleListPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 const routes = [
-  // AUTH ROUTES
+  // PUBLIC WEBSITE
   {
     path: '/',
-    element: <SignInPage />,
+    element: <Layout />,
+    errorElement: <NotFoundPage />,
+    children: [
+      {
+        path: '',
+        element: <HomePage />,
+      },
+      {
+        path: 'about',
+        element: <AboutPage />,
+      },
+      {
+        path: 'articles',
+        element: <ArticleListPage />,
+      },
+      {
+        path: 'articles/:slug',
+        element: <ArticlePage />,
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
+    ],
   },
+
+  // AUTH PAGES
   {
     path: '/signin',
     element: <SignInPage />,
@@ -49,35 +76,8 @@ const routes = [
     element: <SignUpPage />,
   },
 
-  // PROTECTED PUBLIC WEBSITE ROUTES
-  {
-    element: (
-      <ProtectedRoute allowedRoles={['admin', 'editor']}>
-        <Layout />
-      </ProtectedRoute>
-    ),
-    errorElement: <NotFoundPage />,
-    children: [
-      {
-        path: '/home',
-        element: <HomePage />,
-      },
-      {
-        path: '/about',
-        element: <AboutPage />,
-      },
-      {
-        path: '/articles',
-        element: <ArticleListPage />,
-      },
-      {
-        path: '/articles/:id',
-        element: <ArticlePage />,
-      },
-    ],
-  },
-
-  // PROTECTED DASHBOARD ROUTES
+  // DASHBOARD PAGES
+  // This must NOT be inside the public Layout route.
   {
     path: '/dashboard',
     element: (
@@ -107,9 +107,14 @@ const routes = [
           </ProtectedRoute>
         ),
       },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
     ],
   },
 
+  // FALLBACK
   {
     path: '*',
     element: <NotFoundPage />,

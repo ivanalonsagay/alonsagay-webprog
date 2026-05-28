@@ -1,68 +1,46 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const bcrypt = require('bcryptjs');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
 
-const connectDB = require('./config/db');
-const User = require('./models/User');
-const userRoutes = require('./routes/userRoutes');
+import connectDB from './config/db.js';
+import userRoutes from './routes/userRoutes.js';
+import articleRoutes from './routes/articleRoutes.js';
 
 dotenv.config();
+
+connectDB();
 
 const app = express();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: 'http://localhost:5173',
     credentials: true,
   })
 );
 
 app.use(express.json());
+app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  res.send('Alonsagay Lab Act 7 API is running.');
+  res.json({
+    message: 'Ivanka API is running',
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Backend is healthy',
+  });
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/articles', articleRoutes);
 
-const createDefaultAdmin = async () => {
-  const existingAdmin = await User.findOne({
-    username: 'admin',
-  });
+const PORT = process.env.PORT || 5000;
 
-  if (existingAdmin) {
-    return;
-  }
-
-  const hashedPassword = await bcrypt.hash('Admin123!', 10);
-
-  await User.create({
-    firstName: 'System',
-    lastName: 'Admin',
-    age: 25,
-    gender: 'other',
-    contactNumber: '09123456789',
-    email: 'admin@ivanka.com',
-    role: 'admin',
-    username: 'admin',
-    password: hashedPassword,
-    address: 'Sampaloc, Manila',
-    isActive: true,
-  });
-
-  console.log('Default admin created: admin / Admin123!');
-};
-
-const startServer = async () => {
-  await connectDB();
-  await createDefaultAdmin();
-
-  const port = process.env.PORT || 5000;
-
-  app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-  });
-};
-
-startServer();
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

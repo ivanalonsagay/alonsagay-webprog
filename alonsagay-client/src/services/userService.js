@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-import { API_BASE_URL, getToken } from '../constants';
+import constants, { getToken } from '../constants';
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
+const API = axios.create({
+  baseURL: `${constants.HOST}/users`,
 });
 
-api.interceptors.request.use((config) => {
+API.interceptors.request.use((config) => {
   const token = getToken();
 
   if (token) {
@@ -16,64 +16,142 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-const getErrorMessage = (error) => {
-  return error.response?.data?.message || error.message || 'Something went wrong.';
+const getErrorMessage = (error, fallback) => {
+  return (
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    fallback
+  );
+};
+
+const normalizeUser = (user) => {
+  return {
+    ...user,
+    id: user.id || user._id,
+  };
+};
+
+const normalizeResponse = (response) => {
+  const data = response.data;
+
+  if (Array.isArray(data)) {
+    return data.map(normalizeUser);
+  }
+
+  if (Array.isArray(data.users)) {
+    return data.users.map(normalizeUser);
+  }
+
+  if (Array.isArray(data.data)) {
+    return data.data.map(normalizeUser);
+  }
+
+  if (data.user) {
+    return normalizeUser(data.user);
+  }
+
+  return data;
+};
+
+const getUsers = async () => {
+  try {
+    const response = await API.get('/');
+
+    return normalizeResponse(response);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to fetch users.'));
+  }
+};
+
+const createUser = async (user) => {
+  try {
+    const response = await API.post('/', user);
+
+    return normalizeResponse(response);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to create user.'));
+  }
+};
+
+const register = async (user) => {
+  try {
+    const response = await API.post('/register', user);
+
+    return normalizeResponse(response);
+  } catch (error) {
+    try {
+      const response = await API.post('/', user);
+
+      return normalizeResponse(response);
+    } catch (secondError) {
+      throw new Error(
+        getErrorMessage(secondError, 'Unable to register account.')
+      );
+    }
+  }
+};
+
+const updateUser = async (id, user) => {
+  try {
+    const response = await API.put(`/${id}`, user);
+
+    return normalizeResponse(response);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to update user.'));
+  }
+};
+
+const deleteUser = async (id) => {
+  try {
+    const response = await API.delete(`/${id}`);
+
+    return normalizeResponse(response);
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to delete user.'));
+  }
+};
+
+const toggleUserStatus = async (id) => {
+  try {
+    const response = await API.patch(`/${id}/status`);
+
+    return normalizeResponse(response);
+  } catch (error) {
+    try {
+      const users = await getUsers();
+      const user = users.find((item) => item.id === id);
+
+      const response = await API.put(`/${id}`, {
+        ...user,
+        isActive: !user.isActive,
+      });
+
+      return normalizeResponse(response);
+    } catch {
+      throw new Error(getErrorMessage(error, 'Unable to update user status.'));
+    }
+  }
+};
+
+const login = async (credentials) => {
+  try {
+    const response = await API.post('/login', credentials);
+
+    return response.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Invalid username or password.'));
+  }
 };
 
 const UserService = {
-  async register(payload) {
-    try {
-      const response = await api.post('/users/register', payload);
-      return response.data;
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  },
-
-  async login(payload) {
-    try {
-      const response = await api.post('/users/login', payload);
-      return response.data;
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  },
-
-  async getUsers() {
-    try {
-      const response = await api.get('/users');
-      return response.data;
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  },
-
-  async createUser(payload) {
-    try {
-      const response = await api.post('/users', payload);
-      return response.data;
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  },
-
-  async updateUser(id, payload) {
-    try {
-      const response = await api.put(`/users/${id}`, payload);
-      return response.data;
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  },
-
-  async toggleUserStatus(id) {
-    try {
-      const response = await api.patch(`/users/${id}/status`);
-      return response.data;
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  },
+  getUsers,
+  createUser,
+  register,
+  updateUser,
+  deleteUser,
+  toggleUserStatus,
+  login,
 };
 
 export default UserService;

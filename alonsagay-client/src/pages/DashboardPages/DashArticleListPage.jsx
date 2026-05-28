@@ -1,241 +1,502 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import {
+  Alert,
   Box,
   Button,
-  Card,
-  CardContent,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
   InputAdornment,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 
+import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { DataGrid } from '@mui/x-data-grid';
 
-import articles from '../../data/article-content';
+import ArticleService from '../../services/articleService';
+
+const blankForm = {
+  id: null,
+  slug: '',
+  title: '',
+  paragraphs: '',
+  imageUrl: '',
+  status: 'active',
+};
 
 const DashArticleListPage = () => {
+  const [articles, setArticles] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [form, setForm] = useState(blankForm);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // ENHANCEMENT 2:
-  // The articles available here are the same articles from ArticleListPage.
-  const rows = useMemo(
-    () =>
-      articles.map((article, index) => ({
-        id: article.id,
-        number: index + 1,
-        title: article.title,
-        category: article.category || 'General',
-        description: article.description,
-        publicLink: `/articles/${article.id}`,
-      })),
-    []
-  );
+  const loadArticles = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+
+      const data = await ArticleService.getArticles();
+      setArticles(data);
+    } catch (err) {
+      setError(err.message || 'Unable to load articles.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
+
+  const rows = useMemo(() => {
+    return articles.map((article) => ({
+      id: article.id,
+      slug: article.slug,
+      title: article.title,
+      paragraphs: article.paragraphs.length,
+      preview: article.preview || article.paragraphs[0] || '',
+      status: article.status,
+      imageUrl: article.imageUrl,
+      fullParagraphs: article.paragraphs,
+    }));
+  }, [articles]);
 
   const filteredRows = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase();
 
-    if (!keyword) {
-      return rows;
+    return rows.filter((row) => {
+      const matchesSearch =
+        !keyword ||
+        String(row.id).toLowerCase().includes(keyword) ||
+        String(row.slug).toLowerCase().includes(keyword) ||
+        String(row.title).toLowerCase().includes(keyword) ||
+        String(row.preview).toLowerCase().includes(keyword);
+
+      const matchesStatus =
+        statusFilter === 'all' || row.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [rows, searchTerm, statusFilter]);
+
+  const openAddModal = () => {
+    setForm(blankForm);
+    setError('');
+    setMessage('');
+    setModalOpen(true);
+  };
+
+  const openEditModal = (row) => {
+    setForm({
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      paragraphs: row.fullParagraphs.join('\n'),
+      imageUrl: row.imageUrl || '',
+      status: row.status,
+    });
+
+    setError('');
+    setMessage('');
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setForm(blankForm);
+    setError('');
+  };
+
+  const handleChange = (event) => {
+    setForm((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+
+    setError('');
+  };
+
+  const validate = () => {
+    if (!form.slug.trim()) {
+      return 'Slug is required.';
     }
 
-    return rows.filter((article) => {
-      return (
-        article.title.toLowerCase().includes(keyword) ||
-        article.category.toLowerCase().includes(keyword) ||
-        article.description.toLowerCase().includes(keyword)
-      );
-    });
-  }, [rows, searchTerm]);
+    if (!form.title.trim()) {
+      return 'Title is required.';
+    }
+
+    if (!form.paragraphs.trim()) {
+      return 'Paragraphs are required.';
+    }
+
+    return '';
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const validationError = validate();
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    try {
+      if (form.id) {
+        await ArticleService.updateArticle(form.id, form);
+        setMessage('Article updated successfully.');
+      } else {
+        await ArticleService.createArticle(form);
+        setMessage('Article added successfully.');
+      }
+
+      await loadArticles();
+      closeModal();
+    } catch (err) {
+      setError(err.message || 'Unable to save article.');
+    }
+  };
+
+  const handleToggleStatus = async (row) => {
+    try {
+      const nextStatus = row.status === 'active' ? 'inactive' : 'active';
+
+      await ArticleService.updateArticle(row.id, {
+        slug: row.slug,
+        title: row.title,
+        paragraphs: row.fullParagraphs.join('\n'),
+        imageUrl: row.imageUrl || '',
+        status: nextStatus,
+      });
+
+      setMessage('Article status updated successfully.');
+      await loadArticles();
+    } catch (err) {
+      setError(err.message || 'Unable to update article status.');
+    }
+  };
 
   const columns = [
     {
-      field: 'number',
-      headerName: '#',
-      width: 80,
+      field: 'id',
+      headerName: 'ID',
+      width: 140,
+    },
+    {
+      field: 'slug',
+      headerName: 'Slug',
+      flex: 1,
+      minWidth: 160,
     },
     {
       field: 'title',
-      headerName: 'Article Title',
+      headerName: 'Title',
       flex: 1,
-      minWidth: 220,
+      minWidth: 190,
     },
     {
-      field: 'category',
-      headerName: 'Category',
-      width: 170,
-      renderCell: ({ row }) => (
-        <Chip size="small" label={row.category} variant="outlined" />
-      ),
+      field: 'paragraphs',
+      headerName: 'Paragraphs',
+      width: 130,
+      align: 'center',
+      headerAlign: 'center',
     },
     {
-      field: 'description',
-      headerName: 'Description',
+      field: 'preview',
+      headerName: 'Preview',
       flex: 1.5,
-      minWidth: 320,
+      minWidth: 260,
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 130,
+      renderCell: ({ row }) => (
+        <Box
+          sx={{
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Chip
+            size="small"
+            label={row.status === 'active' ? 'Active' : 'Inactive'}
+            color={row.status === 'active' ? 'success' : 'default'}
+            variant={row.status === 'active' ? 'filled' : 'outlined'}
+          />
+        </Box>
+      ),
     },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 170,
+      width: 220,
       sortable: false,
       filterable: false,
       renderCell: ({ row }) => (
-        <Button
-          component={RouterLink}
-          to={row.publicLink}
-          size="small"
-          variant="contained"
-          startIcon={<VisibilityIcon />}
+        <Box
           sx={{
-            textTransform: 'none',
-            fontWeight: 700,
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          View
-        </Button>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{
+              flexWrap: 'nowrap',
+            }}
+          >
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => openEditModal(row)}
+              sx={{
+                minWidth: 74,
+                height: 36,
+                textTransform: 'uppercase',
+                fontWeight: 700,
+              }}
+            >
+              Edit
+            </Button>
+
+            <Button
+              size="small"
+              variant="contained"
+              color={row.status === 'active' ? 'warning' : 'success'}
+              onClick={() => handleToggleStatus(row)}
+              sx={{
+                minWidth: 92,
+                height: 36,
+                textTransform: 'uppercase',
+                fontWeight: 700,
+                boxShadow: 2,
+              }}
+            >
+              {row.status === 'active' ? 'Disable' : 'Activate'}
+            </Button>
+          </Stack>
+        </Box>
       ),
     },
   ];
 
   return (
     <Box sx={{ width: '100%', minWidth: 0 }}>
-      {/* UI ETIQUETTE:
-          Header follows the ReportsPage style.
-          Action button is smaller, aligned to the right, and pushed slightly down. */}
-      <Box sx={{ mb: 3 }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', md: 'flex-start' }}
-          spacing={2}
-          sx={{ width: '100%' }}
+      <Box
+        sx={{
+          mb: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 2,
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 500,
+          }}
         >
-          <Box>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 500,
-                lineHeight: 1.2,
-                mb: 1.5,
-              }}
-            >
-              Articles
-            </Typography>
+          Articles
+        </Typography>
 
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{
-                maxWidth: 900,
-                lineHeight: 1.7,
-              }}
-            >
-              Manage and view the same articles displayed on the public
-              ArticleListPage.
-            </Typography>
-          </Box>
-
-          <Stack
-            direction="row"
-            spacing={1.25}
-            flexWrap="wrap"
-            useFlexGap
+        <Stack direction="row" spacing={1}>
+          <Button
+            component={RouterLink}
+            to="/"
+            variant="outlined"
+            startIcon={<HomeIcon />}
             sx={{
-              width: { xs: '100%', md: 'auto' },
-              ml: { md: 'auto' },
-              mt: { xs: 1, md: 1.5 },
-              justifyContent: { xs: 'flex-start', md: 'flex-end' },
-              alignSelf: { xs: 'flex-start', md: 'flex-start' },
+              height: 36,
+              px: 2,
+              fontSize: 12,
+              fontWeight: 700,
+              textTransform: 'uppercase',
             }}
           >
-            <Button
-              component={RouterLink}
-              to="/articles"
-              variant="outlined"
-              size="medium"
-              sx={{
-                minWidth: 170,
-                height: 40,
-                px: 2.25,
-                fontWeight: 700,
-                textTransform: 'none',
-                borderRadius: 1.25,
-              }}
-            >
-              Open Public Article List
-            </Button>
-          </Stack>
+            Home
+          </Button>
+
+          <Button
+            variant="contained"
+            onClick={openAddModal}
+            sx={{
+              height: 36,
+              px: 2,
+              fontSize: 12,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+            }}
+          >
+            Add Article
+          </Button>
         </Stack>
       </Box>
 
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Article Summary
-          </Typography>
+      {message ? (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setMessage('')}>
+          {message}
+        </Alert>
+      ) : null}
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <Paper sx={{ p: 2, flex: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Articles
-              </Typography>
+      {error ? (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          {error}
+        </Alert>
+      ) : null}
 
-              <Typography variant="h4">{rows.length}</Typography>
-            </Paper>
+      <Paper
+        sx={{
+          p: 2,
+          mb: 2,
+          borderRadius: 1,
+        }}
+      >
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+          <TextField
+            placeholder="Search Articles"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            fullWidth
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
 
-            <Paper sx={{ p: 2, flex: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Available Publicly
-              </Typography>
-
-              <Typography variant="h4">{rows.length}</Typography>
-            </Paper>
-          </Stack>
-        </CardContent>
-      </Card>
-
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <TextField
-          label="Search Articles"
-          placeholder="Search by title, category, or description"
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          fullWidth
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
+          <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 180 } }}>
+            <InputLabel>Status Filter</InputLabel>
+            <Select
+              label="Status Filter"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <MenuItem value="all">All Statuses</MenuItem>
+              <MenuItem value="active">Active</MenuItem>
+              <MenuItem value="inactive">Inactive</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
       </Paper>
 
-      <Paper sx={{ p: 2, minWidth: 0, overflow: 'hidden' }}>
-        <Box sx={{ height: 500, width: '100%', minWidth: 0 }}>
+      <Paper
+        sx={{
+          p: 2,
+          minWidth: 0,
+          overflow: 'hidden',
+          borderRadius: 1,
+        }}
+      >
+        <Box sx={{ height: 520, width: '100%' }}>
           <DataGrid
             rows={filteredRows}
             columns={columns}
+            loading={isLoading}
+            rowHeight={64}
+            disableRowSelectionOnClick
             pageSizeOptions={[5, 10]}
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 5,
+                  pageSize: 10,
                   page: 0,
                 },
               },
             }}
-            disableRowSelectionOnClick
+            sx={{
+              '& .MuiDataGrid-cell': {
+                display: 'flex',
+                alignItems: 'center',
+              },
+              '& .MuiDataGrid-columnHeaderTitle': {
+                fontWeight: 700,
+              },
+            }}
           />
         </Box>
       </Paper>
+
+      <Dialog open={modalOpen} onClose={closeModal} fullWidth maxWidth="md">
+        <Box component="form" onSubmit={handleSubmit}>
+          <DialogTitle>{form.id ? 'Edit Article' : 'Add Article'}</DialogTitle>
+
+          <DialogContent dividers>
+            <Stack spacing={2} sx={{ pt: 1 }}>
+              <TextField
+                label="Slug"
+                name="slug"
+                value={form.slug}
+                onChange={handleChange}
+                placeholder="example-article-slug"
+                fullWidth
+              />
+
+              <TextField
+                label="Title"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                fullWidth
+              />
+
+              <TextField
+                label="Paragraphs"
+                name="paragraphs"
+                value={form.paragraphs}
+                onChange={handleChange}
+                placeholder="Write one paragraph per line."
+                multiline
+                rows={6}
+                fullWidth
+              />
+
+              <TextField
+                label="Image URL"
+                name="imageUrl"
+                value={form.imageUrl}
+                onChange={handleChange}
+                placeholder="Optional image URL"
+                fullWidth
+              />
+            </Stack>
+          </DialogContent>
+
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <Button onClick={closeModal}>Cancel</Button>
+
+            <Button type="submit" variant="contained">
+              {form.id ? 'Update Article' : 'Save Article'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </Box>
   );
 };

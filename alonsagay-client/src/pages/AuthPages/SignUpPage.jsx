@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import Logo from '../../assets/logo.png';
 import UserService from '../../services/userService';
+import Logo from '../../assets/logo.png';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -35,18 +35,15 @@ const SignUpPage = () => {
   };
 
   const validate = () => {
-    if (!form.firstName.trim()) return 'First name is required.';
-    if (!form.lastName.trim()) return 'Last name is required.';
-
-    if (!/^\d+$/.test(form.age.trim())) {
+    if (!/^\d+$/.test(form.age)) {
       return 'Age must be a number only.';
     }
 
-    if (!/^\d{11}$/.test(form.contactNumber.trim())) {
+    if (!/^\d{11}$/.test(form.contactNumber)) {
       return 'Contact number must be exactly 11 digits.';
     }
 
-    if (/\s/.test(form.username.trim())) {
+    if (/\s/.test(form.username)) {
       return 'Username must not contain spaces.';
     }
 
@@ -76,8 +73,6 @@ const SignUpPage = () => {
       setError('');
       setSuccess('');
 
-      // ENHANCEMENT 3:
-      // SignUp now works by creating a real user account.
       await UserService.register({
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
@@ -95,7 +90,7 @@ const SignUpPage = () => {
       setSuccess('Account created successfully. Redirecting to sign in...');
 
       setTimeout(() => {
-        navigate('/auth/signin');
+        navigate('/signin');
       }, 1000);
     } catch (err) {
       setError(err.message || 'Unable to create account.');
@@ -105,92 +100,86 @@ const SignUpPage = () => {
   };
 
   return (
-    <main className="min-h-screen w-full bg-[#fff9ea]">
-      <div className="mx-auto grid min-h-screen w-full max-w-[1500px] items-center gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
-        <section className="hidden flex-col items-center text-center lg:flex">
-          <img
-            src={Logo}
-            alt="Ivanka Calamansi Juice"
-            className="mx-auto h-56 w-auto"
-          />
-
-          <div className="mt-16 inline-flex items-center justify-center gap-2 rounded-full bg-[#edf5d9] px-5 py-2 text-sm font-bold uppercase tracking-[0.18em] text-green-900">
-            <span>🌿</span>
-            <span>100% Pinoy. 100% Fresh.</span>
-          </div>
-
-          <h1 className="mt-8 max-w-xl text-6xl font-black leading-[1.08] tracking-tight text-green-900">
-            Join the Ivanka Community.
-          </h1>
-
-          <div className="mt-5 h-1 w-14 rounded-full bg-yellow-500" />
-
-          <p className="mt-7 max-w-md text-base leading-8 text-zinc-700">
-            Create an account and enjoy dashboard access, reports, article
-            records, and fresh Ivanka updates.
-          </p>
-        </section>
-
-        <section className="mx-auto w-full max-w-[560px] rounded-[2rem] border border-green-900/10 bg-white/90 p-7 shadow-2xl shadow-green-900/10 backdrop-blur sm:p-9">
-          <div className="mb-8 flex justify-center lg:hidden">
+    <main className="min-h-screen bg-[#fff9ea]">
+      <div className="mx-auto grid min-h-screen w-full max-w-[1300px] items-center gap-12 px-6 py-10 sm:px-10 lg:grid-cols-[1fr_560px] lg:px-16">
+        <section className="hidden h-full flex-col justify-center lg:flex">
+          <Link to="/" className="w-fit">
             <img
               src={Logo}
               alt="Ivanka Calamansi Juice"
-              className="mx-auto h-20 w-auto"
+              className="h-40 w-80 object-contain"
             />
+          </Link>
+
+          <h1 className="mt-8 max-w-[620px] text-5xl font-black leading-[1.05] tracking-tight text-green-950 xl:text-6xl">
+            Join the Ivanka dashboard team.
+          </h1>
+
+          <div className="mt-6 h-1 w-16 rounded-full bg-yellow-500" />
+
+          <p className="mt-7 max-w-[520px] text-lg leading-8 text-zinc-700">
+            Sign up to access dashboard tools. New accounts are created as
+            editors by default.
+          </p>
+
+        </section>
+
+        <section className="mx-auto w-full max-w-[560px] rounded-[2rem] border border-green-900/10 bg-white p-8 shadow-2xl shadow-green-900/10 sm:p-10">
+          <div className="mb-8 flex justify-center">
+            <Link to="/" className="inline-flex flex-col items-center">
+
+
+            </Link>
           </div>
 
-          <h2 className="text-4xl font-black tracking-tight text-green-900">
-            Sign up
+          <h2 className="text-center text-4xl font-black text-green-950">
+            Sign Up
           </h2>
 
-          <p className="mt-3 text-sm leading-6 text-zinc-600">
-            Create your account to get started.
+          <p className="mt-3 text-center text-sm leading-6 text-zinc-600">
+            Create your editor account.
           </p>
 
           {error ? (
-            <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+            <div className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
               {error}
             </div>
           ) : null}
 
           {success ? (
-            <div className="mt-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
+            <div className="mt-5 rounded-xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
               {success}
             </div>
           ) : null}
 
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
             <div className="grid gap-4 sm:grid-cols-2">
               <input
-                type="text"
                 name="firstName"
                 value={form.firstName}
                 onChange={handleChange}
                 placeholder="First name"
-                className="h-14 rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+                className="h-14 rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
                 required
               />
 
               <input
-                type="text"
                 name="lastName"
                 value={form.lastName}
                 onChange={handleChange}
                 placeholder="Last name"
-                className="h-14 rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+                className="h-14 rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
                 required
               />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <input
-                type="text"
                 name="age"
                 value={form.age}
                 onChange={handleChange}
                 placeholder="Age"
-                className="h-14 rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+                className="h-14 rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
                 required
               />
 
@@ -198,8 +187,7 @@ const SignUpPage = () => {
                 name="gender"
                 value={form.gender}
                 onChange={handleChange}
-                className="h-14 rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
-                required
+                className="h-14 rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -208,12 +196,11 @@ const SignUpPage = () => {
             </div>
 
             <input
-              type="text"
               name="contactNumber"
               value={form.contactNumber}
               onChange={handleChange}
-              placeholder="09123456789"
-              className="h-14 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+              placeholder="Contact number"
+              className="h-14 w-full rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
               required
             />
 
@@ -222,18 +209,17 @@ const SignUpPage = () => {
               name="email"
               value={form.email}
               onChange={handleChange}
-              placeholder="example@email.com"
-              className="h-14 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+              placeholder="Email address"
+              className="h-14 w-full rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
               required
             />
 
             <input
-              type="text"
               name="username"
               value={form.username}
               onChange={handleChange}
               placeholder="Username"
-              className="h-14 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+              className="h-14 w-full rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
               required
             />
 
@@ -244,7 +230,7 @@ const SignUpPage = () => {
                 value={form.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="h-14 rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+                className="h-14 rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
                 required
               />
 
@@ -254,15 +240,10 @@ const SignUpPage = () => {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm password"
-                className="h-14 rounded-xl border border-zinc-200 bg-white px-4 text-sm outline-none focus:border-green-800"
+                className="h-14 rounded-xl border border-zinc-200 px-4 text-sm outline-none transition focus:border-green-800"
                 required
               />
             </div>
-
-            <p className="-mt-2 text-xs leading-5 text-zinc-500">
-              Password must be at least 8 characters. Contact number must be 11
-              digits. Username must not contain spaces.
-            </p>
 
             <textarea
               name="address"
@@ -270,7 +251,7 @@ const SignUpPage = () => {
               onChange={handleChange}
               placeholder="Address"
               rows="3"
-              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none focus:border-green-800"
+              className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-green-800"
               required
             />
 
@@ -279,20 +260,28 @@ const SignUpPage = () => {
               disabled={isLoading}
               className="h-14 w-full rounded-xl bg-green-900 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg shadow-green-900/20 transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isLoading ? 'Creating account...' : 'Create account'}
+              {isLoading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
 
-          <p className="mt-9 text-center text-sm text-zinc-600">
+          <p className="mt-8 text-center text-sm text-zinc-600">
             Already have an account?{' '}
             <Link
-              to="/auth/signin"
-              className="font-black text-green-900 underline-offset-4 hover:underline"
+              to="/signin"
+              className="font-black text-green-900 hover:underline"
             >
-              Sign in
+              Sign In
             </Link>
           </p>
 
+          <div className="mt-5 text-center">
+            <Link
+              to="/"
+              className="text-xs font-black uppercase tracking-[0.16em] text-green-900 hover:underline"
+            >
+              Back to Home
+            </Link>
+          </div>
         </section>
       </div>
     </main>

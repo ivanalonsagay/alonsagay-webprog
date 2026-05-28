@@ -1,24 +1,63 @@
-export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-
-export const getToken = () => {
-  return localStorage.getItem('token');
+const constants = {
+  HOST: 'http://localhost:5000/api',
 };
 
-export const getCurrentUser = () => {
+const AUTH_TOKEN_KEY = 'ivankaAuthToken';
+const AUTH_USER_KEY = 'ivankaAuthUser';
+
+export const saveAuth = ({ token, user }) => {
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+
+  localStorage.setItem(
+    'user',
+    JSON.stringify({
+      ...user,
+      token,
+    })
+  );
+};
+
+export const getToken = () => {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+
+  if (token) {
+    return token;
+  }
+
   try {
-    return JSON.parse(localStorage.getItem('currentUser')) || null;
+    const savedUser = JSON.parse(localStorage.getItem('user'));
+
+    return savedUser?.token || null;
   } catch {
     return null;
   }
 };
 
-export const saveAuth = ({ token, user }) => {
-  localStorage.setItem('token', token);
-  localStorage.setItem('currentUser', JSON.stringify(user));
+export const getCurrentUser = () => {
+  try {
+    const savedUser = localStorage.getItem(AUTH_USER_KEY);
+
+    if (savedUser) {
+      return JSON.parse(savedUser);
+    }
+
+    const oldUser = localStorage.getItem('user');
+
+    if (oldUser) {
+      return JSON.parse(oldUser);
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
 };
 
 export const clearAuth = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('currentUser');
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem('user');
 };
+
+export default constants;

@@ -7,13 +7,17 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const currentUser = getCurrentUser();
 
   if (!token || !currentUser) {
-    return <Navigate to="/auth/signin" replace />;
+    return <Navigate to="/signin" replace />;
   }
 
-  const userRole = String(currentUser.role || '').toLowerCase();
+  const role = String(currentUser.role || '').toLowerCase();
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
-    return <Navigate to="/dashboard" replace />;
+  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    if (allowedRoles.includes('admin')) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    return <Navigate to="/signin" replace />;
   }
 
   return children;

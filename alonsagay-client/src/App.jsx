@@ -1,42 +1,32 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-// Public Website Layout
-import Layout from './components/Layout';
-
-// Protected Route
+import Layout from './layouts/Layout';
+import DashLayout from './layouts/DashLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Dashboard Layout
-import DashLayout from './layouts/DashLayout';
-
-// Landing Pages
 import HomePage from './pages/LandingPages/HomePage';
 import AboutPage from './pages/LandingPages/AboutPage';
 import ArticleListPage from './pages/LandingPages/ArticleListPage';
 import ArticlePage from './pages/LandingPages/ArticlePage';
 
-// Auth Pages
 import SignInPage from './pages/AuthPages/SignInPage';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 
-// Dashboard Pages
 import DashboardPage from './pages/DashboardPages/DashboardPage';
 import ReportsPage from './pages/DashboardPages/ReportsPage';
 import UsersPage from './pages/DashboardPages/UsersPage';
 import DashArticleListPage from './pages/DashboardPages/DashArticleListPage';
 
-// Other Pages
 import NotFoundPage from './pages/NotFoundPage';
 
 const routes = [
-  // PUBLIC WEBSITE
   {
     path: '/',
     element: <Layout />,
     errorElement: <NotFoundPage />,
     children: [
       {
-        path: '',
+        index: true,
         element: <HomePage />,
       },
       {
@@ -51,14 +41,8 @@ const routes = [
         path: 'articles/:slug',
         element: <ArticlePage />,
       },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-      },
     ],
   },
-
-  // AUTH PAGES
   {
     path: '/signin',
     element: <SignInPage />,
@@ -75,9 +59,6 @@ const routes = [
     path: '/auth/signup',
     element: <SignUpPage />,
   },
-
-  // DASHBOARD PAGES
-  // This must NOT be inside the public Layout route.
   {
     path: '/dashboard',
     element: (
@@ -88,7 +69,7 @@ const routes = [
     errorElement: <NotFoundPage />,
     children: [
       {
-        path: '',
+        index: true,
         element: <DashboardPage />,
       },
       {
@@ -107,14 +88,8 @@ const routes = [
           </ProtectedRoute>
         ),
       },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-      },
     ],
   },
-
-  // FALLBACK
   {
     path: '*',
     element: <NotFoundPage />,

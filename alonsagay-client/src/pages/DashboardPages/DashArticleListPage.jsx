@@ -21,7 +21,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -324,21 +323,7 @@ const DashArticleListPage = () => {
         </Typography>
 
         <Stack direction="row" spacing={1}>
-          <Button
-            component={RouterLink}
-            to="/"
-            variant="outlined"
-            startIcon={<HomeIcon />}
-            sx={{
-              height: 36,
-              px: 2,
-              fontSize: 12,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-            }}
-          >
-            Home
-          </Button>
+
 
           <Button
             variant="contained"

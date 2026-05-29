@@ -423,7 +423,7 @@ const UsersPage = () => {
       sortable: false,
       filterable: false,
       renderCell: ({ row }) => (
-        <Stack direction="row" spacing={1} sx={{ py: 0.5 }}>
+        <Stack direction="row" spacing={1} sx={{ py: 0.5,  }}>
           <Button size="small" variant="outlined" onClick={() => openModal(row)}>
             Edit
           </Button>

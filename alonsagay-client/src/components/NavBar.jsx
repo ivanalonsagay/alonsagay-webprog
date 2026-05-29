@@ -1,45 +1,54 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
+import { getCurrentUser, getToken } from '../constants';
 import Logo from '../assets/logo.png';
 
 const navLinks = [
   {
-    label: 'Home',
-    to: '/home',
+    label: 'Home ',
+    to: '/',
+    end: true,
   },
   {
     label: 'About',
     to: '/about',
+    end: false,
   },
   {
     label: 'Articles',
     to: '/articles',
+    end: false,
   },
 ];
 
-const NavBar = () => {
+const Navbar = () => {
+  const token = getToken();
+  const currentUser = getCurrentUser();
+  const isLoggedIn = Boolean(token && currentUser);
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#fff9ea]/90 backdrop-blur">
-      <nav className="mx-auto flex w-full max-w-[1500px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
-        <NavLink to="/home" className="inline-flex items-center">
+    <header className="w-full border-b border-green-900/10 bg-[#fff9ea]">
+      <nav className="mx-auto flex h-24 w-full max-w-[1500px] items-center justify-between px-6 sm:px-10 lg:px-16">
+        <Link to="/" className="flex items-center">
           <img
             src={Logo}
             alt="Ivanka Calamansi Juice"
-            className="h-20 w-auto"
+            className="block h-16 w-auto object-contain"
           />
-        </NavLink>
+        </Link>
 
-        <div className="hidden items-center gap-10 md:flex">
+        <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
+              end={link.end}
               className={({ isActive }) =>
                 [
-                  'rounded-full px-5 py-2 text-xs font-black uppercase tracking-[0.25em] transition',
+                  'rounded-full px-6 py-3 text-xs font-black uppercase tracking-[0.35em] transition',
                   isActive
-                    ? 'bg-green-900 text-white'
-                    : 'text-green-900 hover:bg-green-900 hover:text-white',
+                    ? 'bg-green-900 text-white shadow-lg shadow-green-900/20'
+                    : 'text-green-900 hover:bg-green-900/10',
                 ].join(' ')
               }
             >
@@ -48,15 +57,15 @@ const NavBar = () => {
           ))}
         </div>
 
-        <NavLink
-          to="/dashboard"
-          className="hidden rounded-full border-2 border-green-800 px-8 py-3 text-xs font-black uppercase tracking-[0.18em] text-green-900 transition hover:bg-green-900 hover:text-white md:inline-flex"
+        <Link
+          to={isLoggedIn ? '/dashboard' : '/signin'}
+          className="rounded-full border-2 border-green-800 px-8 py-3 text-xs font-black uppercase tracking-[0.24em] text-green-900 transition hover:bg-green-900 hover:text-white"
         >
-          Dashboard
-        </NavLink>
+          {isLoggedIn ? 'Dashboard' : 'Sign In'}
+        </Link>
       </nav>
     </header>
   );
 };
 
-export default NavBar;
+export default Navbar;

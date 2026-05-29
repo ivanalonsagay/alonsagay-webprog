@@ -139,21 +139,8 @@ const SignUpPage = () => (
 
         <div className="my-8 flex items-center gap-4">
           <div className="h-px flex-1 bg-zinc-200" />
-          <p className="text-sm text-zinc-500">or continue with</p>
-          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <button className="flex h-13 items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white text-sm font-bold text-zinc-800 shadow-sm transition hover:border-green-900/30 hover:bg-[#fff9ea]">
-            <span className="text-xl">G</span>
-            Google
-          </button>
-
-          <button className="flex h-13 items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white text-sm font-bold text-zinc-800 shadow-sm transition hover:border-green-900/30 hover:bg-[#fff9ea]">
-            <span className="text-xl"></span>
-            Apple
-          </button>
-        </div>
 
         <p className="mt-9 text-center text-sm text-zinc-600">
           Already have an account?{' '}

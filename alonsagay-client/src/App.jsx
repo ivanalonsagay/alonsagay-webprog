@@ -28,10 +28,9 @@ const routes = [
   {
     path: '/',
     element: <Layout />,
-    errorElement: <NotFoundPage />,
     children: [
       {
-        path: '',
+        index: true,
         element: <HomePage />,
       },
       {
@@ -46,12 +45,9 @@ const routes = [
         path: 'articles/:id',
         element: <ArticlePage />,
       },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-      },
     ],
   },
+
   {
     path: '/signin',
     element: <SignInPage />,
@@ -61,12 +57,20 @@ const routes = [
     element: <SignUpPage />,
   },
   {
+    path: '/auth/signin',
+    element: <SignInPage />,
+  },
+  {
+    path: '/auth/signup',
+    element: <SignUpPage />,
+  },
+
+  {
     path: '/dashboard',
     element: <DashLayout />,
-    errorElement: <NotFoundPage />,
     children: [
       {
-        path: '',
+        index: true,
         element: <DashboardPage />,
       },
       {
@@ -78,6 +82,11 @@ const routes = [
         element: <UsersPage />,
       },
     ],
+  },
+
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ];
 

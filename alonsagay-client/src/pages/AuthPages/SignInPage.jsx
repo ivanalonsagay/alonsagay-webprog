@@ -1,139 +1,122 @@
 import { Link } from 'react-router-dom';
-import Button from '../../components/Button';
 
-const inputClasses =
-  'mt-2 w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-zinc-50';
+import Logo from '../../assets/logo.png';
 
-const actionButtonClassName =
-  'w-full rounded-xl py-3 text-[11px] tracking-[0.2em]';
+const SignInPage = () => (
+  <main className="min-h-screen w-full bg-[#fff9ea]">
+    <div className="mx-auto grid min-h-screen w-full max-w-[1500px] items-center gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
+      {/* Left Content */}
+      <section className="hidden flex-col items-center text-center lg:flex">
+        <img
+          src={Logo}
+          alt="Ivanka Calamansi Juice"
+          className="mx-auto h-60 w-auto"
+        />
 
-const socialButtonClassName =
-  'flex w-full items-center justify-center gap-3 rounded-xl py-3 text-[11px] tracking-[0.2em]';
+        <div className="mt-16 inline-flex items-center justify-center gap-2 rounded-full bg-[#edf5d9] px-5 py-2 text-sm font-bold uppercase tracking-[0.18em] text-green-900">
+          <span>🌿</span>
+          <span>100% Pinoy. 100% Fresh.</span>
+        </div>
 
-const AppleIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="h-5 w-5 fill-current"
-    aria-hidden="true"
-  >
-    <path d="M16.365 1.43c0 1.14-.42 2.11-1.25 2.93-.88.86-1.88 1.36-2.98 1.28-.14-1.09.41-2.19 1.2-2.99.87-.88 2.06-1.52 3.03-1.22zM20.43 17.32c-.54 1.25-.8 1.8-1.49 2.9-.97 1.47-2.33 3.31-4.02 3.33-1.5.02-1.89-.98-3.93-.97-2.04.01-2.47 1-3.97.98-1.69.01-2.98-1.67-3.95-3.14-2.7-4.12-2.98-8.95-1.32-11.52 1.18-1.83 3.05-2.9 4.81-2.9 1.79 0 2.92.99 4.4.99 1.44 0 2.32-.99 4.39-.99 1.57 0 3.23.85 4.4 2.33-3.87 2.12-3.24 7.65.68 8.99z" />
-  </svg>
-);
+        <h1 className="mt-8 max-w-xl text-6xl font-black leading-[1.08] tracking-tight text-green-900">
+          Freshness You Can Trust.
+        </h1>
 
-const GoogleIcon = () => (
-  <span className="text-base font-black normal-case tracking-normal text-zinc-900">
-    G
-  </span>
-);
+        <div className="mt-5 h-1 w-14 rounded-full bg-yellow-500" />
 
-const SignInPage = () => {
-  return (
-    <>
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
-        Log In
-      </h1>
+        <p className="mt-7 max-w-md text-base leading-8 text-zinc-700">
+          Welcome back! Sign in to continue exploring stories, tips, and
+          everything Ivanka Calamansi.
+        </p>
+      </section>
 
-      <p className="mt-3 text-sm leading-6 text-zinc-600">
-        Access your account using the same monochrome wireframe language used
-        across the site.
-      </p>
-
-      <form className="mt-8 space-y-5">
-        <div>
-          <label
-            htmlFor="signin-email"
-            className="text-sm font-medium text-zinc-700"
-          >
-            Email Address
-          </label>
-
-          <input
-            id="signin-email"
-            type="email"
-            placeholder="Placeholder"
-            autoComplete="email"
-            className={inputClasses}
+      {/* Form Card */}
+      <section className="mx-auto w-full max-w-[460px] rounded-[2rem] border border-green-900/10 bg-white/90 p-7 shadow-2xl shadow-green-900/10 backdrop-blur sm:p-9">
+        <div className="mb-8 flex justify-center lg:hidden">
+          <img
+            src={Logo}
+            alt="Ivanka Calamansi Juice"
+            className="mx-auto h-20 w-auto"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="signin-password"
-            className="text-sm font-medium text-zinc-700"
-          >
-            Password
-          </label>
-
-          <input
-            id="signin-password"
-            type="password"
-            placeholder="Placeholder"
-            autoComplete="current-password"
-            className={inputClasses}
-          />
-
-          <p className="mt-2 text-xs leading-5 text-zinc-500">
-            It must be a combination of minimum 8 letters, numbers, and symbols.
+          <h2 className="text-4xl font-black tracking-tight text-green-900">
+            Sign in
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-zinc-600">
+            Welcome back! Please sign in to continue.
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <label className="flex items-center gap-2 text-zinc-600">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-zinc-300 accent-zinc-900"
-            />
-            <span>Remember me</span>
-          </label>
+        <form className="mt-8 space-y-6">
+          <div>
+            <label className="text-sm font-bold text-zinc-900">
+              Email address
+            </label>
+
+            <div className="mt-2 flex h-14 items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 text-zinc-500 shadow-sm focus-within:border-green-800">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="h-full w-full bg-transparent text-sm text-zinc-800 outline-none placeholder:text-zinc-400"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-bold text-zinc-900">Password</label>
+
+            <div className="mt-2 flex h-14 items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 text-zinc-500 shadow-sm focus-within:border-green-800">
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="h-full w-full bg-transparent text-sm text-zinc-800 outline-none placeholder:text-zinc-400"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <label className="flex items-center gap-2 text-sm text-zinc-600">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-zinc-300 accent-green-900"
+              />
+              Remember me
+            </label>
+
+            <a
+              href="#"
+              className="text-sm font-bold text-green-900 underline-offset-4 hover:underline"
+            >
+              Forgot password?
+            </a>
+          </div>
 
           <button
-            type="button"
-            className="font-medium text-zinc-700 transition hover:text-zinc-900"
+            type="submit"
+            className="h-14 w-full rounded-xl bg-green-900 text-sm font-black text-white shadow-lg shadow-green-900/20 transition hover:bg-green-800"
           >
-            Forgot Password?
+            Sign in
           </button>
+        </form>
+
+        <div className="my-8 flex items-center gap-4">
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          className={actionButtonClassName}
-        >
-          Log In
-        </Button>
-
-        <div className="grid gap-3 pt-2 sm:grid-cols-2">
-          <Button
-            type="button"
-            variant="secondary"
-            className={socialButtonClassName}
+        <p className="mt-9 text-center text-sm text-zinc-600">
+          Don&apos;t have an account?{' '}
+          <Link
+            to="/signup"
+            className="font-black text-green-900 underline-offset-4 hover:underline"
           >
-            <GoogleIcon />
-            <span>Google</span>
-          </Button>
-
-          <Button
-            type="button"
-            variant="secondary"
-            className={socialButtonClassName}
-          >
-            <AppleIcon />
-            <span>Apple</span>
-          </Button>
-        </div>
-      </form>
-
-      <div className="mt-8 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
-        No account yet?{' '}
-        <Link
-          to="/auth/signup"
-          className="font-semibold text-zinc-900 transition hover:text-zinc-600"
-        >
-          Sign Up
-        </Link>
-      </div>
-    </>
-  );
-};
+            Sign up
+          </Link>
+        </p>
+      </section>
+    </div>
+  </main>
+);
 
 export default SignInPage;

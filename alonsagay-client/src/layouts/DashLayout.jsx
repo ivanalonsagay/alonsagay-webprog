@@ -214,7 +214,7 @@ const DashLayoutContent = () => {
 
   const handleLogout = () => {
     clearAuth();
-    navigate('/signin', { replace: true });
+    navigate('/auth/signin', { replace: true });
   };
 
   return (

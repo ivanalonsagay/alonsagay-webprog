@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const currentUser = getCurrentUser();
 
   if (!token || !currentUser) {
-    return <Navigate to="/signin" replace />;
+    return <Navigate to="/auth/signin" replace />;
   }
 
   const role = String(currentUser.role || '').toLowerCase();
@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
       return <Navigate to="/dashboard" replace />;
     }
 
-    return <Navigate to="/signin" replace />;
+    return <Navigate to="/auth/signin" replace />;
   }
 
   return children;

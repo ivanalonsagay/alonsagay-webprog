@@ -90,7 +90,7 @@ const SignUpPage = () => {
       setSuccess('Account created successfully. Redirecting to sign in...');
 
       setTimeout(() => {
-        navigate('/signin');
+        navigate('/auth/signin');
       }, 1000);
     } catch (err) {
       setError(err.message || 'Unable to create account.');
@@ -267,7 +267,7 @@ const SignUpPage = () => {
           <p className="mt-8 text-center text-sm text-zinc-600">
             Already have an account?{' '}
             <Link
-              to="/signin"
+              to="/auth/signin"
               className="font-black text-green-900 hover:underline"
             >
               Sign In

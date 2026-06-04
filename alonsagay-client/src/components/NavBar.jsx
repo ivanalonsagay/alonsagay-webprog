@@ -30,7 +30,7 @@ const Navbar = () => {
   const isLoggedIn = Boolean(token && currentUser);
 
   const mainButtonText = isLoggedIn ? 'Dashboard' : 'Sign In';
-  const mainButtonPath = isLoggedIn ? '/dashboard' : '/signin';
+  const mainButtonPath = isLoggedIn ? '/dashboard' : '/auth/signin';
 
   const navLinkClass = ({ isActive }) =>
     [

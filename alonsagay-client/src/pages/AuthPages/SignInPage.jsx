@@ -154,7 +154,7 @@ const SignInPage = () => {
           <p className="mt-8 text-center text-sm text-zinc-600">
             No account yet?{' '}
             <Link
-              to="/signup"
+              to="/auth/signup"
               className="font-black text-green-900 hover:underline"
             >
               Sign Up

@@ -44,14 +44,6 @@ const routes = [
     ],
   },
   {
-    path: '/signin',
-    element: <SignInPage />,
-  },
-  {
-    path: '/signup',
-    element: <SignUpPage />,
-  },
-  {
     path: '/auth/signin',
     element: <SignInPage />,
   },

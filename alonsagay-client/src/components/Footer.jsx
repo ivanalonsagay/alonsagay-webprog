@@ -68,7 +68,7 @@ const Footer = () => {
               Articles
             </Link>
 
-            <Link to="/signin" className="transition hover:text-yellow-300">
+            <Link to="/auth/signin" className="transition hover:text-yellow-300">
               Sign In
             </Link>
           </div>
@@ -154,7 +154,7 @@ const Footer = () => {
               Latest Articles
             </Link>
 
-            <Link to="/signin" className="transition hover:text-yellow-300">
+            <Link to="/auth/signin" className="transition hover:text-yellow-300">
               Admin Access
             </Link>
           </div>

@@ -47,7 +47,7 @@ const Navbar = () => {
           <img
             src={Logo}
             alt="Ivanka Calamansi Juice"
-            className="h-14 w-auto object-contain"
+            className="h-22 w-auto object-contain"
           />
         </Link>
 

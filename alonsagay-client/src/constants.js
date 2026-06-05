@@ -1,5 +1,5 @@
 const constants = {
-  HOST: `${process.env.VITE_API_BASE_URL}/api`,
+  HOST: 'http://localhost:5000/api',
 };
 
 const AUTH_TOKEN_KEY = 'ivankaAuthToken';

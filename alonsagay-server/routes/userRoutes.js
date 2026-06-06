@@ -1,24 +1,23 @@
 const express = require('express');
 
+// import functions
 const {
-  registerUser,
-  loginUser,
   getUsers,
   createUser,
   updateUser,
-  toggleUserStatus,
+  deleteUser,
+  loginUser,
 } = require('../controllers/userController');
-
-const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/register', registerUser);
+router.route('/').get(getUsers).post(createUser);
+
+router.route('/:id').put(updateUser).delete(deleteUser);
+
 router.post('/login', loginUser);
 
-router.get('/', protect, adminOnly, getUsers);
-router.post('/', protect, adminOnly, createUser);
-router.put('/:id', protect, adminOnly, updateUser);
-router.patch('/:id/status', protect, adminOnly, toggleUserStatus);
+// Keep this only if your frontend SignUp page still uses /api/users/register
+router.post('/register', createUser);
 
 module.exports = router;
